@@ -32,7 +32,7 @@ abstract class BetterPlayerControlsState<T extends StatefulWidget>
         videoPlayerValue.position >= videoPlayerValue.duration!;
   }
 
-  void skipBack() {
+  void skipBack() async {
     if (latestValue != null) {
       cancelAndRestartTimer();
       final beginning = const Duration().inMilliseconds;
@@ -41,12 +41,12 @@ abstract class BetterPlayerControlsState<T extends StatefulWidget>
                   milliseconds: betterPlayerControlsConfiguration
                       .backwardSkipTimeInMilliseconds))
           .inMilliseconds;
-      betterPlayerController!
+      await betterPlayerController!
           .seekTo(Duration(milliseconds: max(skip, beginning)));
     }
   }
 
-  void skipForward() {
+  void skipForward() async {
     if (latestValue != null) {
       cancelAndRestartTimer();
       final end = latestValue!.duration!.inMilliseconds;
@@ -55,7 +55,8 @@ abstract class BetterPlayerControlsState<T extends StatefulWidget>
                   milliseconds: betterPlayerControlsConfiguration
                       .forwardSkipTimeInMilliseconds))
           .inMilliseconds;
-      betterPlayerController!.seekTo(Duration(milliseconds: min(skip, end)));
+      await betterPlayerController!
+          .seekTo(Duration(milliseconds: min(skip, end)));
     }
   }
 
