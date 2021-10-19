@@ -11,6 +11,8 @@ import 'package:better_player/src/subtitles/better_player_subtitles_configuratio
 import 'package:better_player/src/subtitles/better_player_subtitles_drawer.dart';
 import 'package:better_player/src/video_player/video_player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:vector_math/vector_math_64.dart' as Vector;
 
 class BetterPlayerWithControls extends StatefulWidget {
   final BetterPlayerController? controller;
@@ -93,14 +95,9 @@ class _BetterPlayerWithControlsState extends State<BetterPlayerWithControls> {
     }
 
     aspectRatio ??= 16 / 9;
-    final innerContainer = Container(
-      width: double.infinity,
-      color: betterPlayerController
-          .betterPlayerConfiguration.controlsConfiguration.backgroundColor,
-      child: AspectRatio(
-        aspectRatio: aspectRatio,
-        child: _buildPlayerWithControls(betterPlayerController, context),
-      ),
+    final innerContainer = AspectRatio(
+      aspectRatio: aspectRatio,
+      child: _buildPlayerWithControls(betterPlayerController, context),
     );
 
     if (betterPlayerController.betterPlayerConfiguration.expandToFill) {
@@ -224,9 +221,12 @@ class _BetterPlayerVideoFitWidget extends StatefulWidget {
 }
 
 class _BetterPlayerVideoFitWidgetState
-    extends State<_BetterPlayerVideoFitWidget> {
+    extends State<_BetterPlayerVideoFitWidget>
+    with SingleTickerProviderStateMixin {
   VideoPlayerController? get controller =>
       widget.betterPlayerController.videoPlayerController;
+  late Animation _animation;
+  late AnimationController _animationController;
 
   bool _initialized = false;
 
@@ -238,6 +238,13 @@ class _BetterPlayerVideoFitWidgetState
 
   @override
   void initState() {
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    _animation = Tween(begin: 1.0, end: 1.25).animate(
+        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut)
+          ..addListener(() {
+            setState(() {});
+          }));
     super.initState();
     if (!widget.betterPlayerController.betterPlayerConfiguration
         .showPlaceholderUntilPlay) {
@@ -294,24 +301,40 @@ class _BetterPlayerVideoFitWidgetState
           _started = false;
         });
       }
+      if (event == BetterPlayerControllerEvent.toggleZoom) {
+        if (_animationController.isCompleted) {
+          _animationController.reverse();
+        } else {
+          _animationController.forward();
+        }
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     if (_initialized && _started) {
+      var height = size.height;
+      var rot =
+          (widget.betterPlayerController.betterPlayerDataSource?.rotation ??
+              1.6);
       return Center(
-        child: ClipRect(
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            child: FittedBox(
-              fit: widget.boxFit,
-              child: SizedBox(
-                width: controller!.value.size?.width ?? 0,
-                height: controller!.value.size?.height ?? 0,
-                child: VideoPlayer(controller),
+        child: FittedBox(
+          fit: widget.boxFit,
+          child: SizedBox(
+            height: height,
+            width: height * rot,
+            child: Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.diagonal3(
+                Vector.Vector3(
+                  _animation.value,
+                  _animation.value,
+                  _animation.value,
+                ),
               ),
+              child: VideoPlayer(controller),
             ),
           ),
         ),

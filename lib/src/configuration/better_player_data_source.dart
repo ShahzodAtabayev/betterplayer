@@ -23,6 +23,9 @@ class BetterPlayerDataSource {
   ///Flag to determine if current data source is live stream
   final bool? liveStream;
 
+  /// video rotation for android
+  final double? rotation;
+
   /// Custom headers for player
   final Map<String, String>? headers;
 
@@ -81,6 +84,7 @@ class BetterPlayerDataSource {
     this.url, {
     this.bytes,
     this.subtitles,
+    this.rotation,
     this.liveStream = false,
     this.headers,
     this.useAsmsSubtitles = true,
@@ -217,6 +221,7 @@ class BetterPlayerDataSource {
     bool? useAsmsTracks,
     bool? useAsmsAudioTracks,
     Map<String, String>? resolutions,
+    double? rotation,
     BetterPlayerCacheConfiguration? cacheConfiguration,
     BetterPlayerNotificationConfiguration? notificationConfiguration =
         const BetterPlayerNotificationConfiguration(showNotification: false),
@@ -235,6 +240,7 @@ class BetterPlayerDataSource {
       subtitles: subtitles ?? this.subtitles,
       liveStream: liveStream ?? this.liveStream,
       headers: headers ?? this.headers,
+      rotation: rotation ?? this.rotation,
       useAsmsSubtitles: useAsmsSubtitles ?? this.useAsmsSubtitles,
       useAsmsTracks: useAsmsTracks ?? this.useAsmsTracks,
       useAsmsAudioTracks: useAsmsAudioTracks ?? this.useAsmsAudioTracks,

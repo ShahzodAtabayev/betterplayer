@@ -12,6 +12,9 @@ enum BetterPlayerControllerEvent {
   ///New data source has been set.
   setupDataSource,
 
+  /// zoom button pressed
+  toggleZoom,
+
   //Video has started.
   play
 }
