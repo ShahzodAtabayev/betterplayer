@@ -532,25 +532,45 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   Future<void> seekTo(Duration? position) async {
     _timer?.cancel();
+    // if (_isDisposed) {
+    //   return;
+    // }
+    // if (position! > value.duration!) {
+    //   position = value.duration;
+    // } else if (position < const Duration()) {
+    //   position = const Duration();
+    // }
+    // print('seek --------------');
+    // await _videoPlayerPlatform.seekTo(_textureId, position);
+    // _updatePosition(position);
+    // print('seeked --------------');
+
     bool isPlaying = value.isPlaying;
     if (_isDisposed) {
       return;
     }
-    if (isPlaying) {
-      await pause();
-    }
+
+    // if (isPlaying) {
+    //   // await pause();
+    //   // print('before waiting seek');
+    //   // await Future.delayed(Duration(milliseconds: 100), () {});
+    //   // print('after waiting seek');
+    // }
 
     Duration? positionToSeek = position;
     if (position! > value.duration!) {
       positionToSeek = value.duration;
-    } else if (position < const Duration()) {
-      positionToSeek = const Duration();
+    } else if (position < Duration.zero) {
+      positionToSeek = Duration.zero;
     }
     _seekPosition = positionToSeek;
+    // print('seek --------------');
     await _videoPlayerPlatform.seekTo(_textureId, positionToSeek);
+    // print('seeked --------------');
     _updatePosition(position);
 
     if (isPlaying) {
+      // print('before the pause playing');
       play();
     } else {
       // pause();

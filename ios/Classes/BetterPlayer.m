@@ -4,6 +4,14 @@
 
 #import "BetterPlayer.h"
 #import <better_player/better_player-Swift.h>
+#import <Foundation/Foundation.h>
+#import <Flutter/Flutter.h>
+#import <AVKit/AVKit.h>
+#import <AVFoundation/AVFoundation.h>
+#import <GLKit/GLKit.h>
+#import "BetterPlayerTimeUtils.h"
+#import "BetterPlayerView.h"
+#import "BetterPlayerEzDrmAssetsLoaderDelegate.h"
 
 static void* timeRangeContext = &timeRangeContext;
 static void* statusContext = &statusContext;
@@ -11,6 +19,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 static void* playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void* playbackBufferFullContext = &playbackBufferFullContext;
 static void* presentationSizeContext = &presentationSizeContext;
+
 
 
 #if TARGET_OS_IOS
@@ -519,12 +528,20 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)seekTo:(int)location {
-    ///When player is playing, pause video, seek to new position and start again. This will prevent issues with seekbar jumps.
-
-
+//    NSLog( @"seek ios ===================");
+    Boolean isPlaying = _isPlaying;
+    if (isPlaying){
+        [_player pause];
+    }
+    
     [_player seekToTime:CMTimeMake(location, 1000)
         toleranceBefore:kCMTimeZero
          toleranceAfter:kCMTimeZero];
+    
+    if(isPlaying){
+        [_player play];
+    }
+//    NSLog( @"seeked ios ===================");
 }
 
 - (void)setIsLooping:(bool)isLooping {
