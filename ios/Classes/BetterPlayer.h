@@ -56,7 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)disablePictureInPicture;
 - (int64_t)absolutePosition;
 - (int64_t) FLTCMTimeToMillis:(CMTime) time;
-
 - (void)clear;
 - (void)disposeSansEventChannel;
 - (void)dispose;

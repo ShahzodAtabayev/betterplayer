@@ -1,16 +1,33 @@
+////
+////  BetterPlayerView.swift
+////  better_player
+////
+////  Created by Shahzod Atabayev on 18/10/21.
+////
 //
-//  BetterPlayerView.swift
-//  better_player
+//import Foundation
+//import AVKit
+//import UIKit
 //
-//  Created by Shahzod Atabayev on 18/10/21.
+//class BetterPlayerView {
+//    var player: AVPlayer?
 //
-
-import Foundation
-import AVKit
-import UIKit
-
-
-class BetterPlayerView: UIView {
-    var player: AVPlayer?
-    private(set) var playerLayer: AVPlayerLayer?
-}
+//    private(set) var playerLayer: AVPlayerLayer?
+//
+//    func getPlayer () -> AVPlayer? {
+//        return playerLayer?.player
+//    }
+//
+//    func setPlayer (_ player: AVPlayer?) {
+//        playerLayer?.player = player
+//    }
+//
+//    // Override UIView method
+//    static func layerClass () -> AnyClass {
+//        return AVPlayerLayer.self
+//    }
+//
+//    func getPlayerLayer () -> AVPlayerLayer? {
+//        return playerLayer
+//    }
+//}

@@ -10,6 +10,7 @@ import 'package:better_player/src/core/better_player_utils.dart';
 import 'package:better_player/src/subtitles/better_player_subtitles_configuration.dart';
 import 'package:better_player/src/subtitles/better_player_subtitles_drawer.dart';
 import 'package:better_player/src/video_player/video_player.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:vector_math/vector_math_64.dart' as Vector;
@@ -236,8 +237,11 @@ class _BetterPlayerVideoFitWidgetState
 
   StreamSubscription? _controllerEventSubscription;
 
+  late BoxFit _videoFit;
+
   @override
   void initState() {
+    _videoFit = widget.betterPlayerController.betterPlayerConfiguration.fit;
     _animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     _animation = Tween(begin: 1.0, end: 1.25).animate(
@@ -302,10 +306,10 @@ class _BetterPlayerVideoFitWidgetState
         });
       }
       if (event == BetterPlayerControllerEvent.toggleZoom) {
-        if (_animationController.isCompleted) {
-          _animationController.reverse();
+        if (widget.betterPlayerController.isZoom) {
+          _videoFit = BoxFit.cover;
         } else {
-          _animationController.forward();
+          _videoFit = BoxFit.contain;
         }
       }
     });
@@ -320,6 +324,20 @@ class _BetterPlayerVideoFitWidgetState
           (widget.betterPlayerController.betterPlayerDataSource?.rotation ??
               1.6);
       return Center(
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          child: FittedBox(
+            fit: _videoFit,
+            child: SizedBox(
+              height: height,
+              width: height * rot,
+              child: VideoPlayer(controller),
+            ),
+          ),
+        ),
+      );
+      /*Center(
         child: FittedBox(
           fit: widget.boxFit,
           child: SizedBox(
@@ -338,7 +356,7 @@ class _BetterPlayerVideoFitWidgetState
             ),
           ),
         ),
-      );
+      );*/
     } else {
       return const SizedBox();
     }
