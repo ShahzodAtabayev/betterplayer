@@ -622,6 +622,7 @@ class BetterPlayerController {
     } else {
       _postControllerEvent(BetterPlayerControllerEvent.hideFullscreen);
       _isZoom = false;
+      pause();
     }
   }
 
