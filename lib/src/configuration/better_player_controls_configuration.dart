@@ -44,6 +44,9 @@ class BetterPlayerControlsConfiguration {
   ///Flag used to enable/disable fullscreen
   final bool enableFullscreen;
 
+  ///Flag used to enable/disable title
+  final bool enableTitle;
+
   ///Flag used to enable/disable mute
   final bool enableMute;
 
@@ -182,6 +185,7 @@ class BetterPlayerControlsConfiguration {
     this.enableProgressBarDrag = true,
     this.enablePlayPause = true,
     this.enableSkips = true,
+    this.enableTitle = true,
     this.enableAudioTracks = true,
     this.progressBarPlayedColor = Colors.white,
     this.progressBarHandleColor = Colors.white,
