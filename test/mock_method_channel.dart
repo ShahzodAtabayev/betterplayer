@@ -34,15 +34,15 @@ class MockMethodChannel {
   void _createEventChannel(int id) {
     final MethodChannel eventChannel =
         MethodChannel("better_player_channel/videoEvents$id");
-    TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
-        .setMockMethodCallHandler(eventChannel, (MethodCall methodCall) async {
-      TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
-          .handlePlatformMessage(
-              "better_player_channel/videoEvents$id",
-              const StandardMethodCodec()
-                  .encodeSuccessEnvelope(_getInitResult()),
-              (ByteData? data) {});
-    });
+    // TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
+    //     .setMockMethodCallHandler(eventChannel, (MethodCall methodCall) async {
+    //   TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
+    //       .handlePlatformMessage(
+    //           "better_player_channel/videoEvents$id",
+    //           const StandardMethodCodec()
+    //               .encodeSuccessEnvelope(_getInitResult()),
+    //           (ByteData? data) {});
+    // });
 
     eventsChannels.add(eventChannel);
   }

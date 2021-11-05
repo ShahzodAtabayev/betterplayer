@@ -12,13 +12,13 @@ void main() {
   group(
     "BetterPlayerController tests",
     () {
-      setUp(
-        () => {
-          TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
-              .setMockMethodCallHandler(
-                  mockMethodChannel.channel, mockMethodChannel.handle)
-        },
-      );
+      // setUp(
+      //   () => {
+      //     TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
+      //         .setMockMethodCallHandler(
+      //             mockMethodChannel.channel, mockMethodChannel.handle)
+      //   },
+      // );
 
       test("Create controller without data source", () {
         final BetterPlayerMockController betterPlayerMockController =
