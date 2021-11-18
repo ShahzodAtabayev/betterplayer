@@ -135,6 +135,7 @@ final class BetterPlayer {
                 this.customDefaultLoadControl.maxBufferMs,
                 this.customDefaultLoadControl.bufferForPlaybackMs,
                 this.customDefaultLoadControl.bufferForPlaybackAfterRebufferMs);
+        loadBuilder.setBackBuffer(60000,true);
         loadControl = loadBuilder.build();
 
         exoPlayer = new SimpleExoPlayer.Builder(context)
