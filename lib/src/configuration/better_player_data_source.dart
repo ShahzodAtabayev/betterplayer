@@ -57,6 +57,8 @@ class BetterPlayerDataSource {
   ///List of bytes, used only in memory player
   final List<int>? bytes;
 
+  final Duration? startAt;
+
   ///Configuration of remote controls notification
   final BetterPlayerNotificationConfiguration? notificationConfiguration;
 
@@ -96,6 +98,7 @@ class BetterPlayerDataSource {
     this.useAsmsAudioTracks = true,
     this.asmsTrackNames,
     this.resolutions,
+    this.startAt,
     this.cacheConfiguration,
     this.notificationConfiguration =
         const BetterPlayerNotificationConfiguration(
@@ -224,6 +227,7 @@ class BetterPlayerDataSource {
     bool? useAsmsSubtitles,
     bool? useAsmsTracks,
     bool? useAsmsAudioTracks,
+    Duration? startAt,
     Map<String, String>? resolutions,
     double? rotation,
     BetterPlayerCacheConfiguration? cacheConfiguration,
@@ -249,6 +253,7 @@ class BetterPlayerDataSource {
       useAsmsTracks: useAsmsTracks ?? this.useAsmsTracks,
       useAsmsAudioTracks: useAsmsAudioTracks ?? this.useAsmsAudioTracks,
       resolutions: resolutions ?? this.resolutions,
+      startAt: startAt?? this.startAt,
       cacheConfiguration: cacheConfiguration ?? this.cacheConfiguration,
       notificationConfiguration:
           notificationConfiguration ?? this.notificationConfiguration,
