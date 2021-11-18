@@ -15,6 +15,25 @@ class BetterPlayerUtils {
     return "~$mbit MBit/s";
   }
 
+  static String asmsTrackFormat(int? bitrate) {
+    if (bitrate == null || bitrate == 0) return "Auto";
+    if (bitrate < 1000) {
+      return "240p";
+    }
+    if (bitrate < 1000000) {
+      return "360p";
+    }
+    final mbit = (bitrate / 1000000).floor();
+    if (mbit >= 1 && mbit < 3) {
+      return "480p";
+    } else if (mbit >= 3 && mbit < 4) {
+      return "720p";
+    } else if (mbit >= 5) {
+      return "1080p";
+    }
+    return "Auto";
+  }
+
   static String formatDuration(Duration position) {
     final ms = position.inMilliseconds;
 
