@@ -22,7 +22,7 @@ class _NormalPlayerPageState extends State<NormalPlayerPage> {
     );
     _betterPlayerDataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
-      Constants.forBiggerBlazesUrl,
+      "https://voxe-cdn.s3.eu-north-1.amazonaws.com/movies/igra-v-imitatsiiu-the-imitation-game-2014-d-hdrip/master.m3u8" /*Constants.forBiggerBlazesUrl*/,
     );
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _betterPlayerController.setupDataSource(_betterPlayerDataSource);
