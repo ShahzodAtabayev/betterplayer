@@ -97,7 +97,7 @@ class VideoPlayerValue {
   /// [errorDescription] should have information about the problem.
   bool get hasError => errorDescription != null;
 
-  /// Returns [size.width] / [size.height] when size is non-null, or `1.0.` when
+  /// Returns [size.width] / [size.toolbarHeight] when size is non-null, or `1.0.` when
   /// size is null or the aspect ratio would be less than or equal to 0.0.
   double get aspectRatio {
     if (size == null) {
