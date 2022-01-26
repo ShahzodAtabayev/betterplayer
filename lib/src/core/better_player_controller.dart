@@ -66,7 +66,7 @@ class BetterPlayerController {
   ///Flag used to store full screen mode state.
   bool _isFullScreen = false;
 
-  bool _isZoom = false;
+  bool _isZoom = true;
 
   bool get isZoom => _isZoom;
 
@@ -602,13 +602,13 @@ class BetterPlayerController {
   ///Enables full screen mode in player. This will trigger route change.
   void enterFullScreen() {
     _isFullScreen = true;
+    _isZoom = false;
     _postControllerEvent(BetterPlayerControllerEvent.openFullscreen);
   }
 
   ///Disables full screen mode in player. This will trigger route change.
   void exitFullScreen() async {
     _isFullScreen = false;
-    _isZoom = false;
     await pause();
     _postControllerEvent(BetterPlayerControllerEvent.hideFullscreen);
   }
