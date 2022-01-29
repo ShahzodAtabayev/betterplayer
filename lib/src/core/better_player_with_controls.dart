@@ -1,19 +1,14 @@
-import 'dart:async';
 import 'dart:io';
 import 'dart:math';
-import 'package:better_player/better_player.dart';
-import 'package:better_player/src/configuration/better_player_controller_event.dart';
-import 'package:better_player/src/controls/better_player_cupertino_controls.dart';
-import 'package:better_player/src/controls/better_player_material_controls.dart';
-import 'package:better_player/src/core/better_player_controller.dart';
-import 'package:better_player/src/core/better_player_utils.dart';
-import 'package:better_player/src/subtitles/better_player_subtitles_configuration.dart';
-import 'package:better_player/src/subtitles/better_player_subtitles_drawer.dart';
-import 'package:better_player/src/video_player/video_player.dart';
-import 'package:flutter/cupertino.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:vector_math/vector_math_64.dart' as Vector;
+import 'package:flutter/cupertino.dart';
+import 'package:better_player/better_player.dart';
+import 'package:better_player/src/core/better_player_utils.dart';
+import 'package:better_player/src/video_player/video_player.dart';
+import 'package:better_player/src/controls/better_player_material_controls.dart';
+import 'package:better_player/src/subtitles/better_player_subtitles_drawer.dart';
+import 'package:better_player/src/controls/better_player_cupertino_controls.dart';
 
 class BetterPlayerWithControls extends StatefulWidget {
   final BetterPlayerController? controller;
@@ -226,8 +221,6 @@ class _BetterPlayerVideoFitWidgetState
     with SingleTickerProviderStateMixin {
   VideoPlayerController? get controller =>
       widget.betterPlayerController.videoPlayerController;
-  late Animation _animation;
-  late AnimationController _animationController;
 
   bool _initialized = false;
 
@@ -242,13 +235,6 @@ class _BetterPlayerVideoFitWidgetState
   @override
   void initState() {
     _videoFit = widget.betterPlayerController.betterPlayerConfiguration.fit;
-    _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
-    _animation = Tween(begin: 1.0, end: 1.25).animate(
-        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut)
-          ..addListener(() {
-            setState(() {});
-          }));
     super.initState();
     if (!widget.betterPlayerController.betterPlayerConfiguration
         .showPlaceholderUntilPlay) {
@@ -337,26 +323,6 @@ class _BetterPlayerVideoFitWidgetState
           ),
         ),
       );
-      /*Center(
-        child: FittedBox(
-          fit: widget.boxFit,
-          child: SizedBox(
-            height: height,
-            width: height * rot,
-            child: Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.diagonal3(
-                Vector.Vector3(
-                  _animation.value,
-                  _animation.value,
-                  _animation.value,
-                ),
-              ),
-              child: VideoPlayer(controller),
-            ),
-          ),
-        ),
-      );*/
     } else {
       return const SizedBox();
     }
