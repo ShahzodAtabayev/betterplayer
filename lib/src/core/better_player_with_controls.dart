@@ -1,14 +1,14 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:better_player/better_player.dart';
-import 'package:better_player/src/core/better_player_utils.dart';
-import 'package:better_player/src/video_player/video_player.dart';
-import 'package:better_player/src/controls/better_player_material_controls.dart';
-import 'package:better_player/src/subtitles/better_player_subtitles_drawer.dart';
+import 'package:better_player/src/configuration/better_player_controller_event.dart';
 import 'package:better_player/src/controls/better_player_cupertino_controls.dart';
+import 'package:better_player/src/controls/better_player_material_controls.dart';
+import 'package:better_player/src/core/better_player_utils.dart';
+import 'package:better_player/src/subtitles/better_player_subtitles_drawer.dart';
+import 'package:better_player/src/video_player/video_player.dart';
+import 'package:flutter/material.dart';
 
 class BetterPlayerWithControls extends StatefulWidget {
   final BetterPlayerController? controller;
@@ -25,7 +25,7 @@ class _BetterPlayerWithControlsState extends State<BetterPlayerWithControls> {
       widget.controller!.betterPlayerConfiguration.subtitlesConfiguration;
 
   BetterPlayerControlsConfiguration get controlsConfiguration =>
-      widget.controller!.betterPlayerConfiguration.controlsConfiguration;
+      widget.controller!.betterPlayerControlsConfiguration;
 
   final StreamController<bool> playerVisibilityStreamController =
       StreamController();
@@ -91,9 +91,14 @@ class _BetterPlayerWithControlsState extends State<BetterPlayerWithControls> {
     }
 
     aspectRatio ??= 16 / 9;
-    final innerContainer = AspectRatio(
-      aspectRatio: aspectRatio,
-      child: _buildPlayerWithControls(betterPlayerController, context),
+    final innerContainer = Container(
+      width: double.infinity,
+      color: betterPlayerController
+          .betterPlayerConfiguration.controlsConfiguration.backgroundColor,
+      child: AspectRatio(
+        aspectRatio: aspectRatio,
+        child: _buildPlayerWithControls(betterPlayerController, context),
+      ),
     );
 
     if (betterPlayerController.betterPlayerConfiguration.expandToFill) {
@@ -129,7 +134,7 @@ class _BetterPlayerWithControlsState extends State<BetterPlayerWithControls> {
             angle: rotation * pi / 180,
             child: _BetterPlayerVideoFitWidget(
               betterPlayerController,
-              betterPlayerController.betterPlayerConfiguration.fit,
+              betterPlayerController.getFit(),
             ),
           ),
           betterPlayerController.betterPlayerConfiguration.overlay ??
@@ -217,8 +222,7 @@ class _BetterPlayerVideoFitWidget extends StatefulWidget {
 }
 
 class _BetterPlayerVideoFitWidgetState
-    extends State<_BetterPlayerVideoFitWidget>
-    with SingleTickerProviderStateMixin {
+    extends State<_BetterPlayerVideoFitWidget> {
   VideoPlayerController? get controller =>
       widget.betterPlayerController.videoPlayerController;
 
@@ -230,11 +234,8 @@ class _BetterPlayerVideoFitWidgetState
 
   StreamSubscription? _controllerEventSubscription;
 
-  late BoxFit _videoFit;
-
   @override
   void initState() {
-    _videoFit = widget.betterPlayerController.betterPlayerConfiguration.fit;
     super.initState();
     if (!widget.betterPlayerController.betterPlayerConfiguration
         .showPlaceholderUntilPlay) {
@@ -300,16 +301,8 @@ class _BetterPlayerVideoFitWidgetState
       }
     });
   }
-
-  @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    if (_initialized && _started) {
-      var height = size.height;
-      var rot =
-          (widget.betterPlayerController.betterPlayerDataSource?.rotation ??
-              16 / 9);
-      return Center(
+/*
+* Center(
         child: Container(
           width: double.infinity,
           height: double.infinity,
@@ -319,6 +312,31 @@ class _BetterPlayerVideoFitWidgetState
               height: height,
               width: height * rot,
               child: VideoPlayer(controller),
+            ),
+          ),
+        ),
+      );
+* */
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    if (_initialized && _started) {
+      var height = size.height;
+      var rot =
+          (widget.betterPlayerController.betterPlayerDataSource?.rotation ??
+              16 / 9);
+      return Center(
+        child: ClipRect(
+          child: Container(
+            width: double.infinity,
+            height: double.infinity,
+            child: FittedBox(
+              fit: widget.boxFit,
+              child: SizedBox(
+                width: controller!.value.size?.width ?? 0,
+                height: controller!.value.size?.height ?? 0,
+                child: VideoPlayer(controller),
+              ),
             ),
           ),
         ),
