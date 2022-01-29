@@ -227,6 +227,7 @@ class _BetterPlayerVideoFitWidgetState
       widget.betterPlayerController.videoPlayerController;
 
   bool _initialized = false;
+  BoxFit _videoFit = BoxFit.contain;
 
   VoidCallback? _initializedListener;
 
@@ -301,8 +302,16 @@ class _BetterPlayerVideoFitWidgetState
       }
     });
   }
-/*
-* Center(
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    if (_initialized && _started) {
+      var height = size.height;
+      var rot =
+          (widget.betterPlayerController.betterPlayerDataSource?.rotation ??
+              16 / 9);
+      return Center(
         child: Container(
           width: double.infinity,
           height: double.infinity,
@@ -316,16 +325,7 @@ class _BetterPlayerVideoFitWidgetState
           ),
         ),
       );
-* */
-  @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    if (_initialized && _started) {
-      var height = size.height;
-      var rot =
-          (widget.betterPlayerController.betterPlayerDataSource?.rotation ??
-              16 / 9);
-      return Center(
+      /*Center(
         child: ClipRect(
           child: Container(
             width: double.infinity,
@@ -340,7 +340,7 @@ class _BetterPlayerVideoFitWidgetState
             ),
           ),
         ),
-      );
+      );*/
     } else {
       return const SizedBox();
     }
