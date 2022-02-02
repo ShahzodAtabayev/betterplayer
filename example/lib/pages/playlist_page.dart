@@ -84,7 +84,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
               Padding(
                 padding: EdgeInsets.all(8),
                 child: Text(
-                    "Playlist widget will load automatically next video once current "
+                    "Playlist widgets will load automatically next video once current "
                     "finishes. User can't use player controls when video is changing."),
               ),
               AspectRatio(

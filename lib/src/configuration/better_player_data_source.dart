@@ -74,7 +74,7 @@ class BetterPlayerDataSource {
   ///Configuration of content protection
   final BetterPlayerDrmConfiguration? drmConfiguration;
 
-  ///Placeholder widget which will be shown until video load or play. This
+  ///Placeholder widgets which will be shown until video load or play. This
   ///placeholder may be useful if you want to show placeholder before each video
   ///in playlist. Otherwise, you should use placeholder from
   /// BetterPlayerConfiguration.

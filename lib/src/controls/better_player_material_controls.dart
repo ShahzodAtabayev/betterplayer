@@ -62,7 +62,7 @@ class _BetterPlayerMaterialControlsState
     return buildLTRDirectionality(_buildMainWidget());
   }
 
-  ///Builds main widget of the controls.
+  ///Builds main widgets of the controls.
   Widget _buildMainWidget() {
     _wasLoading = isLoading(_latestValue);
     if (_latestValue?.hasError == true) {

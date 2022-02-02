@@ -50,7 +50,7 @@ class _PlaceholderUntilPlayPageState extends State<PlaceholderUntilPlayPage> {
   }
 
   ///_placeholderStreamController is used only to refresh video placeholder
-  ///widget.
+  ///widgets.
   Widget _buildVideoPlaceholder() {
     return StreamBuilder<bool>(
       stream: _placeholderStreamController.stream,

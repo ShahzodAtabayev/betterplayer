@@ -331,7 +331,7 @@ class _BetterPlayerVideoFitWidgetState
             width: double.infinity,
             height: double.infinity,
             child: FittedBox(
-              fit: widget.boxFit,
+              fit: widgets.boxFit,
               child: SizedBox(
                 width: controller!.value.size?.width ?? 0,
                 height: controller!.value.size?.height ?? 0,

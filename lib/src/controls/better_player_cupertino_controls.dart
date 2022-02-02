@@ -61,7 +61,7 @@ class _BetterPlayerCupertinoControlsState
     return buildLTRDirectionality(_buildMainWidget());
   }
 
-  ///Builds main widget of the controls.
+  ///Builds main widgets of the controls.
   Widget _buildMainWidget() {
     _betterPlayerController = BetterPlayerController.of(context);
 

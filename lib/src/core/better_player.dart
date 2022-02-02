@@ -51,10 +51,10 @@ class _BetterPlayerState extends State<BetterPlayer>
 
   bool _isFullScreen = false;
 
-  ///State of navigator on widget created
+  ///State of navigator on widgets created
   late NavigatorState _navigatorState;
 
-  ///Flag which determines if widget has initialized
+  ///Flag which determines if widgets has initialized
   bool _initialized = false;
 
   ///Subscription for controller events
@@ -98,7 +98,7 @@ class _BetterPlayerState extends State<BetterPlayer>
 
   @override
   void dispose() {
-    ///If somehow BetterPlayer widget has been disposed from widget tree and
+    ///If somehow BetterPlayer widgets has been disposed from widgets tree and
     ///full screen is on, then full screen route must be pop and return to normal
     ///state.
     if (_isFullScreen) {

@@ -37,7 +37,7 @@ void main() {
   });
 }
 
-///Wrap widget with material app to handle all features like navigation and
+///Wrap widgets with material app to handle all features like navigation and
 ///localization properly.
 Widget _wrapWidget(Widget widget) {
   return MaterialApp(home: widget);

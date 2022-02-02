@@ -20,7 +20,7 @@ final Duration startAt;
 /// Whether or not the video should loop
 final bool looping;
 
-/// Weather or not to show the controls when initializing the widget.
+/// Weather or not to show the controls when initializing the widgets.
 final bool showControlsOnInitialize;
 
 /// When the video playback runs  into an error, you can build a custom
@@ -45,7 +45,7 @@ final bool showPlaceholderUntilPlay;
 /// true.
 final bool placeholderOnTop;
 
-/// A widget which is placed between the video and the controls
+/// A widgets which is placed between the video and the controls
 final Widget overlay;
 
 /// Defines if the player will start in fullscreen when play is pressed

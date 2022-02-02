@@ -163,7 +163,7 @@ class BetterPlayerController {
   ///Was controls enabled before Picture in Picture opened.
   bool _wasControlsEnabledBeforePiP = false;
 
-  ///GlobalKey of the BetterPlayer widget
+  ///GlobalKey of the BetterPlayer widgets
   GlobalKey? _betterPlayerGlobalKey;
 
   ///Getter of the GlobalKey

@@ -161,7 +161,7 @@ class VideoPlayerValue {
 ///
 /// Instances must be initialized with initialize.
 ///
-/// The video is displayed in a Flutter app by creating a [VideoPlayer] widget.
+/// The video is displayed in a Flutter app by creating a [VideoPlayer] widgets.
 ///
 /// To reclaim the resources used by the player call [dispose].
 ///
@@ -658,11 +658,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
 /// Widget that displays the video controlled by [controller].
 class VideoPlayer extends StatefulWidget {
-  /// Uses the given [controller] for all video rendered in this widget.
+  /// Uses the given [controller] for all video rendered in this widgets.
   const VideoPlayer(this.controller, {Key? key}) : super(key: key);
 
   /// The [VideoPlayerController] responsible for the video being rendered in
-  /// this widget.
+  /// this widgets.
   final VideoPlayerController? controller;
 
   @override
@@ -715,10 +715,10 @@ class _VideoPlayerState extends State<VideoPlayer> {
   }
 }
 
-/// Used to configure the [VideoProgressIndicator] widget's colors for how it
+/// Used to configure the [VideoProgressIndicator] widgets's colors for how it
 /// describes the video's status.
 ///
-/// The widget uses default colors that are customizeable through this class.
+/// The widgets uses default colors that are customizeable through this class.
 class VideoProgressColors {
   /// Any property can be set to any color. They each have defaults.
   ///
@@ -821,7 +821,7 @@ class _VideoScrubberState extends State<_VideoScrubber> {
 
 /// Displays the play/buffering status of the video controlled by [controller].
 ///
-/// If [allowScrubbing] is true, this widget will detect taps and drags and
+/// If [allowScrubbing] is true, this widgets will detect taps and drags and
 /// seek the video accordingly.
 ///
 /// [padding] allows to specify some extra padding around the progress indicator
@@ -843,7 +843,7 @@ class VideoProgressIndicator extends StatefulWidget {
         super(key: key);
 
   /// The [VideoPlayerController] that actually associates a video with this
-  /// widget.
+  /// widgets.
   final VideoPlayerController controller;
 
   /// The default colors used throughout the indicator.
@@ -851,8 +851,8 @@ class VideoProgressIndicator extends StatefulWidget {
   /// See [VideoProgressColors] for default values.
   final VideoProgressColors colors;
 
-  /// When true, the widget will detect touch input and try to seek the video
-  /// accordingly. The widget ignores such input when false.
+  /// When true, the widgets will detect touch input and try to seek the video
+  /// accordingly. The widgets ignores such input when false.
   ///
   /// Defaults to false.
   final bool? allowScrubbing;
@@ -948,7 +948,7 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
 
 /// Widget for displaying closed captions on top of a video.
 ///
-/// If [text] is null, this widget will not display anything.
+/// If [text] is null, this widgets will not display anything.
 ///
 /// If [textStyle] is supplied, it will be used to style the text in the closed
 /// caption.

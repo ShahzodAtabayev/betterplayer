@@ -38,7 +38,7 @@ class BetterPlayerConfiguration {
   /// true.
   final bool placeholderOnTop;
 
-  /// A widget which is placed between the video and the controls
+  /// A widgets which is placed between the video and the controls
   final Widget? overlay;
 
   /// Defines if the player will start in fullscreen when play is pressed
@@ -104,7 +104,7 @@ class BetterPlayerConfiguration {
 
   ///Defines flag which enabled/disabled auto dispose of
   ///[BetterPlayerController] on [BetterPlayer] dispose. When it's true and
-  ///[BetterPlayerController] instance has been attached to [BetterPlayer] widget
+  ///[BetterPlayerController] instance has been attached to [BetterPlayer] widgets
   ///and dispose has been called on [BetterPlayer] instance, then
   ///[BetterPlayerController] will be disposed.
   ///Default value is true.
