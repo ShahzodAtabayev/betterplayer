@@ -311,6 +311,10 @@ class _BetterPlayerVideoFitWidgetState
       var rot =
           (widget.betterPlayerController.betterPlayerDataSource?.rotation ??
               16 / 9);
+      final videoSize =
+          widget.betterPlayerController.videoPlayerController?.value.size;
+      print(videoSize?.width.toString());
+      print(videoSize?.height.toString());
       return Center(
         child: Container(
           width: double.infinity,
