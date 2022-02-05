@@ -313,8 +313,6 @@ class _BetterPlayerVideoFitWidgetState
               16 / 9);
       final videoSize =
           widget.betterPlayerController.videoPlayerController?.value.size;
-      print(videoSize?.width.toString());
-      print(videoSize?.height.toString());
       return Center(
         child: Container(
           width: double.infinity,
@@ -322,8 +320,8 @@ class _BetterPlayerVideoFitWidgetState
           child: FittedBox(
             fit: _videoFit,
             child: SizedBox(
-              height: height,
-              width: height * rot,
+              height: videoSize?.height ?? height,
+              width: videoSize?.width ?? height * rot,
               child: VideoPlayer(controller),
             ),
           ),
