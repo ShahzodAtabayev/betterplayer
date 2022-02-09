@@ -22,7 +22,7 @@ class _NormalPlayerPageState extends State<NormalPlayerPage> {
       looping: true,
       deviceOrientationsAfterFullScreen: [
         DeviceOrientation.portraitDown,
-        DeviceOrientation.portraitUp
+        DeviceOrientation.portraitUp,
       ],
     );
     _betterPlayerDataSource = BetterPlayerDataSource(
