@@ -307,10 +307,6 @@ class _BetterPlayerVideoFitWidgetState
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     if (_initialized && _started) {
-      var height = size.height;
-      var rot =
-          (widget.betterPlayerController.betterPlayerDataSource?.rotation ??
-              16 / 9);
       final videoSize =
           widget.betterPlayerController.videoPlayerController?.value.size;
       return Center(
@@ -320,8 +316,8 @@ class _BetterPlayerVideoFitWidgetState
           child: FittedBox(
             fit: _videoFit,
             child: SizedBox(
-              height: videoSize?.height ?? height,
-              width: videoSize?.width ?? height * rot,
+              height: videoSize?.height ?? size.height,
+              width: videoSize?.width ?? size.width,
               child: VideoPlayer(controller),
             ),
           ),
