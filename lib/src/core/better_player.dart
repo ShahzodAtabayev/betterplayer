@@ -244,7 +244,6 @@ class _BetterPlayerState extends State<BetterPlayer>
     if (!_betterPlayerConfiguration.allowedScreenSleep) {
       Wakelock.enable();
     }
-    print('===========================00000==============00000==========88');
     await Navigator.of(context, rootNavigator: true).push(route);
     _isFullScreen = false;
     widget.controller.exitFullScreen();

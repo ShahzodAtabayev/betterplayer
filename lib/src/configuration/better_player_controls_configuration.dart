@@ -193,7 +193,7 @@ class BetterPlayerControlsConfiguration {
     this.customControlsBuilder,
     this.playerTheme,
     this.showControls = true,
-    this.showControlsOnInitialize = true,
+    this.showControlsOnInitialize = false,
     this.controlBarHeight = 48.0,
     this.liveTextColor = Colors.red,
     this.enableOverflowMenu = true,
