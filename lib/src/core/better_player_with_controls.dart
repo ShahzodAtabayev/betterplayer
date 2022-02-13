@@ -313,6 +313,7 @@ class _BetterPlayerVideoFitWidgetState
         child: Container(
           width: double.infinity,
           height: double.infinity,
+          color: Colors.black,
           child: FittedBox(
             fit: _videoFit,
             child: SizedBox(
