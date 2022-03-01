@@ -897,10 +897,10 @@ class BetterPlayerController {
 
   ///Cancel next video timer. Used in playlist. Do not use manually.
   void cancelNextVideoTimer() {
-    _nextVideoTime = null;
-    _nextVideoTimeStreamController.add(_nextVideoTime);
-    _nextVideoTimer?.cancel();
-    _nextVideoTimer = null;
+    // _nextVideoTime = null;
+    // _nextVideoTimeStreamController.add(_nextVideoTime);
+    // _nextVideoTimer?.cancel();
+    // _nextVideoTimer = null;
   }
 
   ///Play next video form playlist. Do not use manually.
