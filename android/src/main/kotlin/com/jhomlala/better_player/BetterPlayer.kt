@@ -102,7 +102,7 @@ internal class BetterPlayer(
             this.customDefaultLoadControl.bufferForPlaybackMs,
             this.customDefaultLoadControl.bufferForPlaybackAfterRebufferMs
         )
-        loadBuilder.setBackBuffer(60000, true)
+        loadBuilder.setBackBuffer(30000, true)
         loadControl = loadBuilder.build()
         exoPlayer = SimpleExoPlayer.Builder(context)
             .setTrackSelector(trackSelector)
