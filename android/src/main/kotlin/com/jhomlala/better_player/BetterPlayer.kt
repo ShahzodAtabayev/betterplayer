@@ -59,7 +59,10 @@ import com.google.android.exoplayer2.drm.DrmSessionManagerProvider
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.SelectionOverride
 import com.google.android.exoplayer2.upstream.DataSource
+import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.exoplayer2.util.Util
+import com.jhomlala.better_player.cache.DownloadUtil
+import com.jhomlala.better_player.cache.MediaItemTag
 import java.io.File
 import java.lang.Exception
 import java.lang.IllegalStateException
@@ -854,6 +857,47 @@ internal class BetterPlayer(
                 Log.e(TAG, "Failed to delete cache dir.")
             }
         }
+
+        fun getOptionsDownload(
+            context: Context,
+            url: String,
+            errorCallBack: (() -> Unit)? = null,
+            preparedCallback: ((Map<String, String>) -> Unit)? = null,
+        ) {
+            val mediaItem: MediaItem =
+                MediaItem.Builder()
+                    .setUri(url)
+                    .setMimeType(MimeTypes.APPLICATION_M3U8)
+                    .setTag(MediaItemTag(-1, url))
+                    .build()
+
+            val item = mediaItem.buildUpon()
+                .setTag((mediaItem.playbackProperties?.tag as MediaItemTag))
+                .build()
+
+            if (!DownloadUtil.getDownloadTracker(context)
+                    .hasDownload(item.playbackProperties?.uri)
+            ) {
+                DownloadUtil.getDownloadTracker(context)
+                    .getDownloadOptionsHelper(context, mediaItem) {
+                        preparedCallback?.invoke(it)
+                    }
+            } else {
+                errorCallBack?.invoke()
+            }
+        }
+
+
+        fun onSelectOptionsDownload(context: Context, selectedKey: String) {
+            DownloadUtil.getDownloadTracker(context)
+                .onSelectOptionsDownload(selectedKey = selectedKey)
+        }
+
+        fun onDismissOptionsDownload(context: Context) {
+            DownloadUtil.getDownloadTracker(context)
+                .onDismissOptionsDownload()
+        }
+
 
         //Start pre cache of video. Invoke work manager job and start caching in background.
         fun preCache(

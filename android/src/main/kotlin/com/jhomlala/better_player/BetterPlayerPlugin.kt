@@ -121,6 +121,9 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                 )
                 videoPlayers.put(handle.id(), player)
             }
+            CACHE_OPTIONS_METHOD -> getOptionsDownload(call, result)
+            SELECT_CACHE_OPTIONS_METHOD -> onSelectOptionsDownload(call, result)
+            DISMISS_CACHE_OPTIONS_METHOD -> onDismissOptionsDownload(call, result)
             PRE_CACHE_METHOD -> preCache(call, result)
             STOP_PRE_CACHE_METHOD -> stopPreCache(call, result)
             CLEAR_CACHE_METHOD -> clearCache(result)
@@ -293,6 +296,30 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         }
     }
 
+    private fun getOptionsDownload(call: MethodCall, result: MethodChannel.Result) {
+        val url = call.argument<String>(URL_PARAMETER)
+        if (url != null) {
+            /**
+             * TODO write error case
+             * */
+            BetterPlayer.getOptionsDownload(flutterState!!.applicationContext, url) {
+                result.success(it)
+            }
+        }
+    }
+
+    private fun onSelectOptionsDownload(call: MethodCall, result: MethodChannel.Result) {
+        val selectedKey = call.argument<String>(SELECTED_OPTION_KEY)
+        if (selectedKey != null) {
+            BetterPlayer.onSelectOptionsDownload(flutterState!!.applicationContext, selectedKey)
+        }
+    }
+
+    private fun onDismissOptionsDownload(call: MethodCall, result: MethodChannel.Result) {
+        BetterPlayer.onDismissOptionsDownload(flutterState!!.applicationContext)
+    }
+
+
     /**
      * Start pre cache of video.
      *
@@ -389,6 +416,7 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
             videoPlayers.valueAt(index).disposeRemoteNotifications()
         }
     }
+
     @Suppress("UNCHECKED_CAST")
     private fun <T> getParameter(parameters: Map<String, Any?>?, key: String, defaultValue: T): T {
         if (parameters!!.containsKey(key)) {
@@ -513,6 +541,7 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         private const val DRM_CLEARKEY_PARAMETER = "clearKey"
         private const val MIX_WITH_OTHERS_PARAMETER = "mixWithOthers"
         const val URL_PARAMETER = "url"
+        const val SELECTED_OPTION_KEY = "selectedOptionsKey"
         const val PRE_CACHE_SIZE_PARAMETER = "preCacheSize"
         const val MAX_CACHE_SIZE_PARAMETER = "maxCacheSize"
         const val MAX_CACHE_FILE_SIZE_PARAMETER = "maxCacheFileSize"
@@ -545,5 +574,8 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         private const val DISPOSE_METHOD = "dispose"
         private const val PRE_CACHE_METHOD = "preCache"
         private const val STOP_PRE_CACHE_METHOD = "stopPreCache"
+        private const val CACHE_OPTIONS_METHOD = "cacheOptions"
+        private const val SELECT_CACHE_OPTIONS_METHOD = "selectCacheOptions"
+        private const val DISMISS_CACHE_OPTIONS_METHOD = "dismissCacheOptions"
     }
 }
