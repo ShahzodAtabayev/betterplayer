@@ -54,6 +54,8 @@ class BetterPlayerDataSource {
   ///Optional cache configuration, used only for network data sources
   final BetterPlayerCacheConfiguration? cacheConfiguration;
 
+  final bool useDownloadedFile;
+
   ///List of bytes, used only in memory player
   final List<int>? bytes;
 
@@ -110,6 +112,7 @@ class BetterPlayerDataSource {
     this.drmConfiguration,
     this.placeholder,
     this.bufferingConfiguration = const BetterPlayerBufferingConfiguration(),
+    this.useDownloadedFile = false,
   }) : assert(
             (type == BetterPlayerDataSourceType.network ||
                     type == BetterPlayerDataSourceType.file) ||
@@ -137,6 +140,7 @@ class BetterPlayerDataSource {
     Widget? placeholder,
     BetterPlayerBufferingConfiguration bufferingConfiguration =
         const BetterPlayerBufferingConfiguration(),
+    bool useDownloadedFile = false,
   }) {
     return BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
@@ -155,6 +159,7 @@ class BetterPlayerDataSource {
       drmConfiguration: drmConfiguration,
       placeholder: placeholder,
       bufferingConfiguration: bufferingConfiguration,
+      useDownloadedFile: useDownloadedFile,
     );
   }
 
@@ -253,7 +258,7 @@ class BetterPlayerDataSource {
       useAsmsTracks: useAsmsTracks ?? this.useAsmsTracks,
       useAsmsAudioTracks: useAsmsAudioTracks ?? this.useAsmsAudioTracks,
       resolutions: resolutions ?? this.resolutions,
-      startAt: startAt?? this.startAt,
+      startAt: startAt ?? this.startAt,
       cacheConfiguration: cacheConfiguration ?? this.cacheConfiguration,
       notificationConfiguration:
           notificationConfiguration ?? this.notificationConfiguration,

@@ -57,6 +57,8 @@ import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.drm.DrmSessionManagerProvider
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
+import com.google.android.exoplayer2.offline.DownloadHelper
+import com.google.android.exoplayer2.offline.DownloadRequest
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.SelectionOverride
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.util.Util
@@ -126,7 +128,8 @@ internal class BetterPlayer(
         licenseUrl: String?,
         drmHeaders: Map<String, String>?,
         cacheKey: String?,
-        clearKey: String?
+        clearKey: String?,
+        useDownloadedFile: Boolean = false,
     ) {
         this.key = key
         isInitialized = false
@@ -191,7 +194,14 @@ internal class BetterPlayer(
         } else {
             dataSourceFactory = DefaultDataSourceFactory(context, userAgent)
         }
-        val mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, cacheKey, context)
+        val mediaSource = buildMediaSource(
+            uri,
+            dataSourceFactory,
+            formatHint,
+            cacheKey,
+            context,
+            useDownloadedFile
+        )
         if (overriddenDuration != 0L) {
             val clippingMediaSource = ClippingMediaSource(mediaSource, 0, overriddenDuration * 1000)
             exoPlayer!!.setMediaSource(clippingMediaSource)
@@ -440,7 +450,8 @@ internal class BetterPlayer(
         mediaDataSourceFactory: DataSource.Factory,
         formatHint: String?,
         cacheKey: String?,
-        context: Context
+        context: Context,
+        useDownloadedFile: Boolean = false,
     ): MediaSource {
         val type: Int
         if (formatHint == null) {
@@ -481,9 +492,21 @@ internal class BetterPlayer(
             )
                 .setDrmSessionManagerProvider(drmSessionManagerProvider)
                 .createMediaSource(mediaItem)
-            C.TYPE_HLS -> HlsMediaSource.Factory(mediaDataSourceFactory)
-                .setDrmSessionManagerProvider(drmSessionManagerProvider)
-                .createMediaSource(mediaItem)
+            C.TYPE_HLS -> {
+                val downloadRequest: DownloadRequest? =
+                    DownloadUtil.getDownloadTracker(context)
+                        .getDownloadRequest(mediaItem.playbackProperties?.uri)
+                if (useDownloadedFile && downloadRequest != null) {
+                    return DownloadHelper.createMediaSource(
+                        downloadRequest,
+                        DownloadUtil.getReadOnlyDataSourceFactory(context)
+                    )
+                } else {
+                    return HlsMediaSource.Factory(mediaDataSourceFactory)
+                        .setDrmSessionManagerProvider(drmSessionManagerProvider)
+                        .createMediaSource(mediaItem)
+                }
+            }
             C.TYPE_OTHER -> ProgressiveMediaSource.Factory(
                 mediaDataSourceFactory,
                 DefaultExtractorsFactory()
@@ -494,6 +517,7 @@ internal class BetterPlayer(
                 throw IllegalStateException("Unsupported type: $type")
             }
         }
+
     }
 
     private fun setupVideoPlayer(
