@@ -35,7 +35,7 @@ android {
     compileSdkVersion 31
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 21
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
@@ -55,6 +55,7 @@ android {
         implementation "com.google.android.exoplayer:exoplayer-smoothstreaming:$exoPlayerVersion"
         implementation "com.google.android.exoplayer:exoplayer-ui:$exoPlayerVersion"
         implementation "com.google.android.exoplayer:extension-mediasession:$exoPlayerVersion"
+        implementation "com.google.android.exoplayer:extension-cronet:$exoPlayerVersion"
         implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"
         implementation "androidx.lifecycle:lifecycle-common:$lifecycleVersion"
         implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion"

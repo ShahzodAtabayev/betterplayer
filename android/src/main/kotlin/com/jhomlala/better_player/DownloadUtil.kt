@@ -2,7 +2,6 @@ package com.jhomlala.better_player
 
 
 import android.content.Context
-import android.util.Log
 import com.google.android.exoplayer2.database.DatabaseProvider
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.ext.cronet.CronetDataSource
@@ -17,7 +16,6 @@ import com.google.android.exoplayer2.upstream.cache.Cache
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
-import io.github.yoobi.downloadvideo.R
 import java.io.File
 import java.util.concurrent.Executors
 
@@ -86,10 +84,10 @@ object DownloadUtil {
             Download.STATE_COMPLETED -> context.resources.getString(R.string.exo_download_completed)
             Download.STATE_DOWNLOADING -> context.resources.getString(R.string.exo_download_downloading)
             Download.STATE_FAILED -> context.resources.getString(R.string.exo_download_failed)
-            Download.STATE_QUEUED -> context.resources.getString(R.string.exo_download_queued)
+            Download.STATE_QUEUED -> context.resources.getString(R.string.exo_download_failed)
             Download.STATE_REMOVING -> context.resources.getString(R.string.exo_download_removing)
-            Download.STATE_RESTARTING -> context.resources.getString(R.string.exo_download_restarting)
-            Download.STATE_STOPPED -> context.resources.getString(R.string.exo_download_stopped)
+            Download.STATE_RESTARTING -> context.resources.getString(R.string.exo_download_failed)
+            Download.STATE_STOPPED -> context.resources.getString(R.string.exo_download_failed)
             else -> throw IllegalArgumentException()
         }
     }
