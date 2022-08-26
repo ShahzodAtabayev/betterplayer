@@ -5,25 +5,28 @@ import android.util.Log
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
+import com.google.android.exoplayer2.database.StandaloneDatabaseProvider
+import com.google.android.exoplayer2.upstream.cache.Cache
+import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor
 import java.io.File
 import java.lang.Exception
 
 object BetterPlayerCache {
     @Volatile
     private var instance: SimpleCache? = null
-    fun createCache(context: Context, cacheFileSize: Long): SimpleCache? {
+    fun createCache(context: Context): Cache {
         if (instance == null) {
             synchronized(BetterPlayerCache::class.java) {
                 if (instance == null) {
                     instance = SimpleCache(
                         File(context.cacheDir, "betterPlayerCache"),
-                        LeastRecentlyUsedCacheEvictor(cacheFileSize),
-                        ExoDatabaseProvider(context)
+                        NoOpCacheEvictor(),
+                        StandaloneDatabaseProvider(context)
                     )
                 }
             }
         }
-        return instance
+        return instance!!
     }
 
     @JvmStatic

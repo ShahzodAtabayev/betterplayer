@@ -13,6 +13,7 @@ import android.os.Looper
 import android.util.Log
 import android.util.LongSparseArray
 import com.jhomlala.better_player.BetterPlayerCache.releaseCache
+import com.jhomlala.better_player.downloader.HlsDownloader
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
@@ -32,6 +33,9 @@ import java.util.HashMap
  */
 class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
     private val videoPlayers = LongSparseArray<BetterPlayer>()
+    private val downloaderList = LongSparseArray<HlsDownloader>()
+
+
     private val dataSources = LongSparseArray<Map<String, Any?>>()
     private var flutterState: FlutterState? = null
     private var currentNotificationTextureId: Long = -1
@@ -124,6 +128,11 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
             PRE_CACHE_METHOD -> preCache(call, result)
             STOP_PRE_CACHE_METHOD -> stopPreCache(call, result)
             CLEAR_CACHE_METHOD -> clearCache(result)
+            CREATE_DOWNLOADER -> createDownloader(call, result)
+            CACHE_OPTIONS_METHOD -> getOptionsDownload(call, result)
+            SELECT_CACHE_OPTIONS_METHOD -> onSelectOptionsDownload(call, result)
+            DISMISS_CACHE_OPTIONS_METHOD -> onDismissOptionsDownload(call, result)
+            DISPOSE_DOWNLOADER -> disposeDownloader(call, result)
             else -> {
                 val textureId = (call.argument<Any>(TEXTURE_ID_PARAMETER) as Number?)!!.toLong()
                 val player = videoPlayers[textureId]
@@ -232,7 +241,6 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         val dataSource = call.argument<Map<String, Any?>>(DATA_SOURCE_PARAMETER)!!
         dataSources.put(getTextureId(player)!!, dataSource)
         val key = getParameter(dataSource, KEY_PARAMETER, "")
-        val useDownloadedFile = getParameter<Boolean>(dataSource, USE_DOWNLOADED_FILE, false)
         val headers: Map<String, String> = getParameter(dataSource, HEADERS_PARAMETER, HashMap())
         val overriddenDuration: Number = getParameter(dataSource, OVERRIDDEN_DURATION_PARAMETER, 0)
         if (dataSource[ASSET_PARAMETER] != null) {
@@ -291,7 +299,6 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                 drmHeaders,
                 cacheKey,
                 clearKey,
-                useDownloadedFile,
             )
         }
     }
@@ -457,6 +464,75 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         pipRunnable = null
     }
 
+
+    /**
+     *
+     * downloader
+     *
+     * */
+
+    private fun createDownloader(call: MethodCall, result: MethodChannel.Result) {
+        val url = call.argument<String>(URL_PARAMETER) ?: ""
+        val duration = call.argument<Int>(DURATION) ?: 1
+        val handle = flutterState!!.textureRegistry!!.createSurfaceTexture()
+        val eventChannel =
+            EventChannel(
+                flutterState!!.binaryMessenger,
+                "${EVENTS_CHANNEL_DOWNLOADER}${handle.id()}"
+            )
+        downloaderList.put(
+            handle.id(),
+            HlsDownloader(
+                flutterState!!.applicationContext,
+                eventChannel,
+                url = url,
+                duration = duration.toLong()
+            )
+        )
+        val reply: MutableMap<String, Any> = HashMap()
+        reply["textureId"] = handle.id()
+        result.success(reply)
+        Log.d(TAG, "create success")
+    }
+
+    private fun getOptionsDownload(call: MethodCall, result: MethodChannel.Result) {
+        val textureId = call.argument<Int>(TEXTURE_ID_PARAMETER) ?: return
+
+        /**
+         * TODO write error case
+         * */
+        getDownloader(textureId).getOptionsDownload {
+            it.forEach {
+                Log.d(TAG, it.key)
+            }
+            result.success(it)
+        }
+    }
+
+    private fun onSelectOptionsDownload(call: MethodCall, result: MethodChannel.Result) {
+        val textureId = call.argument<Int>(TEXTURE_ID_PARAMETER) ?: return
+        val selectedKey = call.argument<String>(SELECTED_OPTION_KEY)
+        if (selectedKey != null) {
+            getDownloader(textureId).onSelectOptionsDownload(selectedKey)
+            result.success(null)
+        }
+    }
+
+    private fun onDismissOptionsDownload(call: MethodCall, result: MethodChannel.Result) {
+        val textureId = call.argument<Int>(TEXTURE_ID_PARAMETER) ?: return
+        getDownloader(textureId).onDismissOptionsDownload()
+    }
+
+    private fun disposeDownloader(call: MethodCall, result: MethodChannel.Result) {
+        val textureId = call.argument<Int>(TEXTURE_ID_PARAMETER) ?: return
+        getDownloader(textureId).dispose()
+        result.success(null)
+    }
+
+    private fun getDownloader(id: Int): HlsDownloader {
+        return downloaderList[id.toLong()]
+    }
+
     private interface KeyForAssetFn {
         operator fun get(asset: String?): String
     }
@@ -550,5 +626,20 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         private const val DISPOSE_METHOD = "dispose"
         private const val PRE_CACHE_METHOD = "preCache"
         private const val STOP_PRE_CACHE_METHOD = "stopPreCache"
+
+
+        /**
+         *
+         * downloader
+         * */
+        private const val EVENTS_CHANNEL_DOWNLOADER = "hls_downloader/downloadingStatus"
+        private const val CREATE_DOWNLOADER = "createDownloader"
+        const val DURATION = "duration"
+        const val SELECTED_OPTION_KEY = "selectedOptionsKey"
+        private const val CACHE_OPTIONS_METHOD = "cacheOptions"
+        private const val SELECT_CACHE_OPTIONS_METHOD = "selectCacheOptions"
+        private const val DISMISS_CACHE_OPTIONS_METHOD = "dismissCacheOptions"
+        private const val DISPOSE_DOWNLOADER = "disposeDownloader"
+
     }
 }

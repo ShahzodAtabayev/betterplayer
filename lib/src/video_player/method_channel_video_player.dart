@@ -5,6 +5,8 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:better_player/src/configuration/better_player_buffering_configuration.dart';
 import 'package:better_player/src/core/better_player_utils.dart';
+import 'package:better_player/src/downloader/core/download_event.dart';
+import 'package:better_player/src/downloader/core/hls_downloader_configuration.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -443,5 +445,74 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
       Duration(milliseconds: pair[0] as int),
       Duration(milliseconds: pair[1] as int),
     );
+  }
+
+  /// downloader
+  @override
+  Future<void> disposeDownloader(int? textureId) {
+    return _channel.invokeMethod<void>(
+      'dispose',
+      <String, dynamic>{'textureId': textureId},
+    );
+  }
+
+  @override
+  Future<int> createDownloader(
+      {required HlsDownloaderConfiguration configuration}) async {
+    final responseLinkedHashMap = await _channel.invokeMethod<Map?>(
+      'createDownloader',
+      <String, dynamic>{
+        'url': configuration.url,
+        'duration': configuration.duration,
+      },
+    );
+
+    final response = responseLinkedHashMap != null
+        ? Map<String, dynamic>.from(responseLinkedHashMap)
+        : null;
+    return response?["textureId"];
+  }
+
+  @override
+  Future<Map<String, String>> getCacheOptions(int? textureId) async {
+    final result = await _channel.invokeMethod<Map?>('cacheOptions', {
+      'textureId': textureId,
+    });
+    return result != null ? Map<String, String>.from(result) : {};
+  }
+
+  @override
+  Future<void> onSelectCacheOptions(int? textureId,
+      {required String selectedKey}) async {
+    await _channel.invokeMethod<Map?>('selectCacheOptions', {
+      'textureId': textureId,
+      'selectedOptionsKey': selectedKey,
+    });
+  }
+
+  @override
+  Future<void> onDismissCacheOptions(int? textureId) async {
+    await _channel
+        .invokeMethod<Map?>('dismissCacheOptions', {'textureId': textureId});
+  }
+
+  @override
+  Stream<DownloadEvent> downloadEventsFor(int? textureId) {
+    return _eventChannelForDownloader(textureId)
+        .receiveBroadcastStream()
+        .map((dynamic event) {
+      late Map<dynamic, dynamic> map;
+      if (event is Map) {
+        map = event;
+      }
+      return DownloadEvent(
+        progress: double.tryParse(map["progress"].toString()) ?? 0,
+        status: map["status"].toString(),
+      );
+    });
+  }
+
+  EventChannel _eventChannelForDownloader(int? textureId) {
+    return EventChannel('hls_downloader/downloadingStatus$textureId');
   }
 }

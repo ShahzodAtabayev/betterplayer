@@ -1,19 +1,21 @@
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 
-class NormalPlayerPage extends StatefulWidget {
+class PlayerPage extends StatefulWidget {
+  const PlayerPage({Key? key}) : super(key: key);
+
   @override
-  _NormalPlayerPageState createState() => _NormalPlayerPageState();
+  State<PlayerPage> createState() => _PlayerPageState();
 }
 
-class _NormalPlayerPageState extends State<NormalPlayerPage> {
+class _PlayerPageState extends State<PlayerPage> {
   late BetterPlayerController _betterPlayerController;
   late BetterPlayerDataSource _betterPlayerDataSource;
 
   @override
   void initState() {
     BetterPlayerConfiguration betterPlayerConfiguration =
-        BetterPlayerConfiguration(
+        const BetterPlayerConfiguration(
       aspectRatio: 16 / 9,
       fit: BoxFit.contain,
       autoPlay: true,
@@ -22,6 +24,7 @@ class _NormalPlayerPageState extends State<NormalPlayerPage> {
     _betterPlayerDataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
       "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8",
+      useDownloadedFile: true,
     );
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _betterPlayerController.setupDataSource(_betterPlayerDataSource);
@@ -31,12 +34,8 @@ class _NormalPlayerPageState extends State<NormalPlayerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Normal player page"),
-      ),
       body: Column(
         children: [
-          const SizedBox(height: 8),
           AspectRatio(
             aspectRatio: 16 / 9,
             child: BetterPlayer(controller: _betterPlayerController),

@@ -16,7 +16,7 @@ internal class CacheDataSourceFactory(
 ) : DataSource.Factory {
     private val defaultDatasourceFactory: DefaultDataSourceFactory
     override fun createDataSource(): CacheDataSource {
-        val betterPlayerCache = BetterPlayerCache.createCache(context, maxCacheSize)
+        val betterPlayerCache = BetterPlayerCache.createCache(context)
             ?: throw IllegalStateException("Cache can't be null.")
 
         return CacheDataSource(

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:better_player_example/constants.dart';
+import 'package:better_player_example/downloader/download_page.dart';
 import 'package:better_player_example/pages/auto_fullscreen_orientation_page.dart';
 import 'package:better_player_example/pages/basic_player_page.dart';
 import 'package:better_player_example/pages/cache_page.dart';
@@ -78,6 +79,9 @@ class _WelcomePageState extends State<WelcomePage> {
 
   List<Widget> buildExampleElementWidgets() {
     return [
+      _buildExampleElementWidget("Downloader", () {
+        _navigateToPage(DownloadPage());
+      }),
       _buildExampleElementWidget("Basic player", () {
         _navigateToPage(BasicPlayerPage());
       }),

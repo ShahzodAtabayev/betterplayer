@@ -8,6 +8,8 @@ import 'dart:ui';
 
 // Flutter imports:
 import 'package:better_player/src/configuration/better_player_buffering_configuration.dart';
+import 'package:better_player/src/downloader/core/download_event.dart';
+import 'package:better_player/src/downloader/core/hls_downloader_configuration.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
@@ -184,6 +186,38 @@ abstract class VideoPlayerPlatform {
   // This private method is called by the instance setter, which fails if the class is
   // implemented with `implements`.
   void _verifyProvidesDefaultImplementations() {}
+
+  /// downloader
+  /// Clears one video.
+  Future<void> disposeDownloader(int? textureId) {
+    throw UnimplementedError('dispose() has not been implemented.');
+  }
+
+  /// Creates an instance of a video player and returns its textureId.
+  Future<int?> createDownloader(
+      {required HlsDownloaderConfiguration configuration}) {
+    throw UnimplementedError('create() has not been implemented.');
+  }
+
+  Future<Map<String, String>?> getCacheOptions(int? textureId) {
+    throw UnimplementedError('getCacheOptions() has not been implemented.');
+  }
+
+  Future<void> onSelectCacheOptions(int? textureId,
+      {required String selectedKey}) {
+    throw UnimplementedError(
+        'onSelectCacheOptions() has not been implemented.');
+  }
+
+  Future<void> onDismissCacheOptions(int? textureId) {
+    throw UnimplementedError(
+        'onSelectCacheOptions() has not been implemented.');
+  }
+
+  /// Returns a Stream of []s.
+  Stream<DownloadEvent> downloadEventsFor(int? textureId) {
+    throw UnimplementedError('downloadEventsFor() has not been implemented.');
+  }
 }
 
 /// Description of the data source used to create an instance of
