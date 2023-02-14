@@ -11,14 +11,12 @@ class DownloadPage extends StatefulWidget {
 
 class _DownloadPageState extends State<DownloadPage> {
   final _hlsDownloaderPlugin = HlsDownloader();
-  final url =
-      'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8';
-  final duration = 210000; //ms
+  final url = 'https://cdn.voxe.tv/s3/trailers/the-boss-baby-family-business-official-trailer/master.m3u8';
+  final duration = 148000; //ms
 
   @override
   void initState() {
-    final configuration =
-        HlsDownloaderConfiguration(url: url, duration: duration);
+    final configuration = HlsDownloaderConfiguration(url: url, duration: duration);
     _hlsDownloaderPlugin.create(configuration: configuration).whenComplete(() {
       print("Created success");
     });
@@ -33,8 +31,7 @@ class _DownloadPageState extends State<DownloadPage> {
         actions: [
           IconButton(
             onPressed: () async {
-              Navigator.push<dynamic>(context,
-                  MaterialPageRoute<dynamic>(builder: (_) {
+              Navigator.push<dynamic>(context, MaterialPageRoute<dynamic>(builder: (_) {
                 return const PlayerPage();
               }));
             },
