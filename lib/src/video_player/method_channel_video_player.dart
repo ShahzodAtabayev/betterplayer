@@ -43,14 +43,11 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
           'minBufferMs': bufferingConfiguration.minBufferMs,
           'maxBufferMs': bufferingConfiguration.maxBufferMs,
           'bufferForPlaybackMs': bufferingConfiguration.bufferForPlaybackMs,
-          'bufferForPlaybackAfterRebufferMs':
-              bufferingConfiguration.bufferForPlaybackAfterRebufferMs,
+          'bufferForPlaybackAfterRebufferMs': bufferingConfiguration.bufferForPlaybackAfterRebufferMs,
         },
       );
 
-      response = responseLinkedHashMap != null
-          ? Map<String, dynamic>.from(responseLinkedHashMap)
-          : null;
+      response = responseLinkedHashMap != null ? Map<String, dynamic>.from(responseLinkedHashMap) : null;
     }
     return response?['textureId'] as int?;
   }
@@ -179,8 +176,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Future<void> setTrackParameters(
-      int? textureId, int? width, int? height, int? bitrate) {
+  Future<void> setTrackParameters(int? textureId, int? width, int? height, int? bitrate) {
     return _channel.invokeMethod<void>(
       'setTrackParameters',
       <String, dynamic>{
@@ -227,8 +223,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Future<void> enablePictureInPicture(int? textureId, double? top, double? left,
-      double? width, double? height) async {
+  Future<void> enablePictureInPicture(int? textureId, double? top, double? left, double? width, double? height) async {
     return _channel.invokeMethod<void>(
       'enablePictureInPicture',
       <String, dynamic>{
@@ -323,9 +318,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
 
   @override
   Stream<VideoEvent> videoEventsFor(int? textureId) {
-    return _eventChannelFor(textureId)
-        .receiveBroadcastStream()
-        .map((dynamic event) {
+    return _eventChannelFor(textureId).receiveBroadcastStream().map((dynamic event) {
       late Map<dynamic, dynamic> map;
       if (event is Map) {
         map = event;
@@ -457,8 +450,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Future<int> createDownloader(
-      {required HlsDownloaderConfiguration configuration}) async {
+  Future<int> createDownloader({required HlsDownloaderConfiguration configuration}) async {
     final responseLinkedHashMap = await _channel.invokeMethod<Map?>(
       'createDownloader',
       <String, dynamic>{
@@ -467,9 +459,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
       },
     );
 
-    final response = responseLinkedHashMap != null
-        ? Map<String, dynamic>.from(responseLinkedHashMap)
-        : null;
+    final response = responseLinkedHashMap != null ? Map<String, dynamic>.from(responseLinkedHashMap) : null;
     return response?["textureId"];
   }
 
@@ -482,8 +472,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Future<void> onSelectCacheOptions(int? textureId,
-      {required String selectedKey}) async {
+  Future<void> onSelectCacheOptions(int? textureId, {required String selectedKey}) async {
     await _channel.invokeMethod<Map?>('selectCacheOptions', {
       'textureId': textureId,
       'selectedOptionsKey': selectedKey,
@@ -492,22 +481,19 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
 
   @override
   Future<void> onDismissCacheOptions(int? textureId) async {
-    await _channel
-        .invokeMethod<Map?>('dismissCacheOptions', {'textureId': textureId});
+    await _channel.invokeMethod<Map?>('dismissCacheOptions', {'textureId': textureId});
   }
 
   @override
   Stream<DownloadEvent> downloadEventsFor(int? textureId) {
-    return _eventChannelForDownloader(textureId)
-        .receiveBroadcastStream()
-        .map((dynamic event) {
+    return _eventChannelForDownloader(textureId).receiveBroadcastStream().map((dynamic event) {
       late Map<dynamic, dynamic> map;
       if (event is Map) {
         map = event;
       }
       return DownloadEvent(
         progress: double.tryParse(map["progress"].toString()) ?? 0,
-        status: map["status"].toString(),
+        status: DownloadStatus.values.byName(map["status"].toString()),
       );
     });
   }
