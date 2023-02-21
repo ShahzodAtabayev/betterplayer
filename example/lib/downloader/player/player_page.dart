@@ -14,18 +14,29 @@ class _PlayerPageState extends State<PlayerPage> {
 
   @override
   void initState() {
-    BetterPlayerConfiguration betterPlayerConfiguration =
-        const BetterPlayerConfiguration(
+    BetterPlayerConfiguration betterPlayerConfiguration = const BetterPlayerConfiguration(
       aspectRatio: 16 / 9,
       fit: BoxFit.contain,
       autoPlay: true,
       looping: true,
+      autoDispose: false,
+      allowedScreenSleep: false,
     );
     _betterPlayerDataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
       "https://cdn.voxe.tv/s3/trailers/the-boss-baby-family-business-official-trailer/master.m3u8",
       useDownloadedFile: true,
+      bufferingConfiguration: const BetterPlayerBufferingConfiguration(
+        maxBufferMs: 500000,
+        minBufferMs: 350000,
+      ),
+      headers: {"Referer": "https://voxe.tv/"},
+      startAt: Duration(seconds: 12),
+      videoFormat: BetterPlayerVideoFormat.hls,
+      rotation: 1.6,
+      title: "sdvdsv",
     );
+
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _betterPlayerController.setupDataSource(_betterPlayerDataSource);
     super.initState();

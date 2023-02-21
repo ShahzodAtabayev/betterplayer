@@ -7,4 +7,4 @@ class DownloadEvent {
   DownloadEvent({required this.progress, required this.status});
 }
 
-enum DownloadStatus { downloading, downloaded }
+enum DownloadStatus {initial, downloading, downloaded, pause, failure }

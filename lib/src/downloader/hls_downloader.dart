@@ -18,13 +18,15 @@ class HlsDownloader {
 
   StreamSubscription<dynamic>? _eventSubscription;
 
-  final StreamController<DownloadEvent> videoEventStreamController =
-      StreamController.broadcast();
+  late HlsDownloaderConfiguration _configuration;
 
-  Future<void> create(
-      {required HlsDownloaderConfiguration configuration}) async {
-    _textureId = await VideoPlayerPlatform.instance
-        .createDownloader(configuration: configuration);
+  HlsDownloaderConfiguration get configuration => _configuration;
+
+  final StreamController<DownloadEvent> videoEventStreamController = StreamController.broadcast();
+
+  Future<void> create({required HlsDownloaderConfiguration configuration}) async {
+    _configuration = configuration;
+    _textureId = await VideoPlayerPlatform.instance.createDownloader(configuration: configuration);
     _isCreated = true;
 
     void eventListener(DownloadEvent event) {
@@ -35,9 +37,8 @@ class HlsDownloader {
       print(object);
     }
 
-    _eventSubscription = _videoPlayerPlatform
-        .downloadEventsFor(_textureId)
-        .listen(eventListener, onError: errorListener);
+    _eventSubscription =
+        _videoPlayerPlatform.downloadEventsFor(_textureId).listen(eventListener, onError: errorListener);
   }
 
   Future<Map<String, String>?> getCacheOptions() async {

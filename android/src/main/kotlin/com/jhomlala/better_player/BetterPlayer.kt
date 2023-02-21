@@ -418,7 +418,7 @@ internal class BetterPlayer(
                     )
                 } else {
                     return HlsMediaSource.Factory(mediaDataSourceFactory)
-                        .setDrmSessionManagerProvider(drmSessionManagerProvider!!)
+//                        .setDrmSessionManagerProvider(drmSessionManagerProvider!!)
                         .createMediaSource(mediaItem)
                 }
             }
