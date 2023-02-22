@@ -166,6 +166,14 @@ class DownloadTracker(
         }
     }
 
+    fun removeAllDownloads() {
+        DownloadService.sendRemoveAllDownloads(
+            applicationContext,
+            MyDownloadService::class.java,
+            false
+        )
+    }
+
     private fun loadDownloads() {
         try {
             downloadIndex.getDownloads().use { loadedDownloads ->

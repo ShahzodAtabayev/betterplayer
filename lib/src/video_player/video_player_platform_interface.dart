@@ -207,6 +207,10 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('onSelectCacheOptions() has not been implemented.');
   }
 
+  Future<void> onDeleteAllDownloads() {
+    throw UnimplementedError('onSelectCacheOptions() has not been implemented.');
+  }
+
   /// Returns a Stream of []s.
   Stream<DownloadEvent> downloadEventsFor(int? textureId) {
     throw UnimplementedError('downloadEventsFor() has not been implemented.');
