@@ -36,6 +36,12 @@ class _DownloadPageState extends State<DownloadPage> {
               }));
             },
             icon: const Icon(Icons.play_arrow),
+          ),
+          IconButton(
+            onPressed: () {
+              _hlsDownloaderPlugin.deleteDownload(url);
+            },
+            icon: Icon(Icons.delete),
           )
         ],
       ),

@@ -18,13 +18,10 @@ class HlsDownloader {
 
   StreamSubscription<dynamic>? _eventSubscription;
 
-  final StreamController<DownloadEvent> videoEventStreamController =
-      StreamController.broadcast();
+  final StreamController<DownloadEvent> videoEventStreamController = StreamController.broadcast();
 
-  Future<void> create(
-      {required HlsDownloaderConfiguration configuration}) async {
-    _textureId = await VideoPlayerPlatform.instance
-        .createDownloader(configuration: configuration);
+  Future<void> create({required HlsDownloaderConfiguration configuration}) async {
+    _textureId = await VideoPlayerPlatform.instance.createDownloader(configuration: configuration);
     _isCreated = true;
 
     void eventListener(DownloadEvent event) {
@@ -35,9 +32,8 @@ class HlsDownloader {
       print(object);
     }
 
-    _eventSubscription = _videoPlayerPlatform
-        .downloadEventsFor(_textureId)
-        .listen(eventListener, onError: errorListener);
+    _eventSubscription =
+        _videoPlayerPlatform.downloadEventsFor(_textureId).listen(eventListener, onError: errorListener);
   }
 
   Future<Map<String, String>?> getCacheOptions() async {
@@ -56,5 +52,10 @@ class HlsDownloader {
   Future<void> onDismissCacheOptions() async {
     if (!_isCreated) PlatformException(message: "not created", code: '');
     return VideoPlayerPlatform.instance.onDismissCacheOptions(_textureId);
+  }
+
+  Future<void> deleteDownload(String url) async {
+    if (!_isCreated) PlatformException(message: "not created", code: '');
+    return VideoPlayerPlatform.instance.onDeleteDownload(url);
   }
 }
