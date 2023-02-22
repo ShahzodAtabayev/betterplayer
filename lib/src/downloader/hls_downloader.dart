@@ -58,4 +58,14 @@ class HlsDownloader {
     if (!_isCreated) PlatformException(message: "not created", code: '');
     return VideoPlayerPlatform.instance.onDismissCacheOptions(_textureId);
   }
+
+  Future<void> deleteDownload(String url) async {
+    if (!_isCreated) PlatformException(message: "not created", code: '');
+    return VideoPlayerPlatform.instance.onDeleteDownload(url);
+  }
+
+  Future<void> deleteAllDownloads() async {
+    if (!_isCreated) PlatformException(message: "not created", code: '');
+    return VideoPlayerPlatform.instance.onDeleteAllDownloads();
+  }
 }

@@ -7,6 +7,7 @@ import android.app.Activity
 import android.app.PictureInPictureParams
 import android.content.Context
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -14,6 +15,7 @@ import android.util.Log
 import android.util.LongSparseArray
 import com.jhomlala.better_player.BetterPlayerCache.releaseCache
 import com.jhomlala.better_player.downloader.HlsDownloader
+import com.jhomlala.better_player.downloader.core.DownloadUtil
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
@@ -131,6 +133,8 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
             CREATE_DOWNLOADER -> createDownloader(call, result)
             CACHE_OPTIONS_METHOD -> getOptionsDownload(call, result)
             SELECT_CACHE_OPTIONS_METHOD -> onSelectOptionsDownload(call, result)
+            DELETE_DOWNLOAD -> onRemoveDownload(call, result)
+            DELETE_ALL_DOWNLOAD -> onRemoveAllDownloads(call, result)
             DISMISS_CACHE_OPTIONS_METHOD -> onDismissOptionsDownload(call, result)
             DISPOSE_DOWNLOADER -> disposeDownloader(call, result)
             else -> {
@@ -501,7 +505,7 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         /**
          * TODO write error case
          * */
-        getDownloader(textureId).getOptionsDownload {
+        getDownloader(textureId).getOptionsDownload { it ->
             it.forEach {
                 Log.d(TAG, it.key)
             }
@@ -516,6 +520,17 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
             getDownloader(textureId).onSelectOptionsDownload(selectedKey)
             result.success(null)
         }
+    }
+
+    private fun onRemoveDownload(call: MethodCall, result: MethodChannel.Result) {
+        val url = call.argument<String>(URL)
+        val tracker = DownloadUtil.getDownloadTracker(flutterState!!.applicationContext)
+        tracker.removeDownload(Uri.parse(url))
+    }
+
+    private fun onRemoveAllDownloads(call: MethodCall, result: MethodChannel.Result) {
+        val tracker = DownloadUtil.getDownloadTracker(flutterState!!.applicationContext)
+        tracker.removeAllDownloads()
     }
 
     private fun onDismissOptionsDownload(call: MethodCall, result: MethodChannel.Result) {
@@ -634,8 +649,11 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
          * */
         private const val EVENTS_CHANNEL_DOWNLOADER = "hls_downloader/downloadingStatus"
         private const val CREATE_DOWNLOADER = "createDownloader"
+        private const val DELETE_DOWNLOAD = "deleteDownload"
+        private const val DELETE_ALL_DOWNLOAD = "deleteAllDownload"
         const val DURATION = "duration"
         const val SELECTED_OPTION_KEY = "selectedOptionsKey"
+        const val URL = "url"
         private const val CACHE_OPTIONS_METHOD = "cacheOptions"
         private const val SELECT_CACHE_OPTIONS_METHOD = "selectCacheOptions"
         private const val DISMISS_CACHE_OPTIONS_METHOD = "dismissCacheOptions"

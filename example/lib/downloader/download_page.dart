@@ -1,5 +1,5 @@
-import 'package:better_player/better_player.dart';
 import 'package:better_player_example/downloader/player/player_page.dart';
+import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 
 class DownloadPage extends StatefulWidget {
@@ -36,7 +36,13 @@ class _DownloadPageState extends State<DownloadPage> {
               }));
             },
             icon: const Icon(Icons.play_arrow),
-          )
+          ),
+          IconButton(
+            onPressed: () {
+              _hlsDownloaderPlugin.deleteAllDownloads();
+            },
+            icon: Icon(Icons.delete),
+          ),
         ],
       ),
       body: StreamBuilder<DownloadEvent>(

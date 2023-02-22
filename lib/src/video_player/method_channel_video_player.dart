@@ -480,6 +480,16 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<void> onDeleteDownload(String? url) async {
+    await _channel.invokeMethod<void>('deleteDownload', {"url": url});
+  }
+
+  @override
+  Future<void> onDeleteAllDownloads() async {
+    await _channel.invokeMethod<void>('deleteAllDownload');
+  }
+
+  @override
   Future<void> onDismissCacheOptions(int? textureId) async {
     await _channel.invokeMethod<Map?>('dismissCacheOptions', {'textureId': textureId});
   }
