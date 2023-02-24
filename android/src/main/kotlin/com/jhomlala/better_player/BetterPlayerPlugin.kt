@@ -502,23 +502,23 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
     private fun getOptionsDownload(call: MethodCall, result: MethodChannel.Result) {
         val textureId = call.argument<Int>(TEXTURE_ID_PARAMETER) ?: return
 
-        /**
-         * TODO write error case
-         * */
-        getDownloader(textureId).getOptionsDownload { it ->
-            it.forEach {
-                Log.d(TAG, it.key)
-            }
+        getDownloader(textureId).getOptionsDownload(preparedCallback = {
             result.success(it)
-        }
+        }, errorCallback = {
+            result.error("cannot_download", it, "")
+        })
     }
 
     private fun onSelectOptionsDownload(call: MethodCall, result: MethodChannel.Result) {
         val textureId = call.argument<Int>(TEXTURE_ID_PARAMETER) ?: return
         val selectedKey = call.argument<String>(SELECTED_OPTION_KEY)
         if (selectedKey != null) {
-            getDownloader(textureId).onSelectOptionsDownload(selectedKey)
-            result.success(null)
+            getDownloader(textureId).onSelectOptionsDownload(selectedKey, successCallBack = {
+                result.success(null)
+            }, notSpaceError = {
+                result.error("no_enough_space", "Not enought space", "")
+            })
+
         }
     }
 

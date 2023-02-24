@@ -85,7 +85,7 @@ class DownloadTracker(
     fun getDownloadOptionsHelper(
         context: Context, mediaItem: MediaItem,
         positiveCallback: (() -> Unit)? = null, dismissCallback: (() -> Unit)? = null,
-        preparedCallback: ((Map<String, String>) -> Unit)? = null,
+        preparedCallback: ((Map<String, Double>) -> Unit)? = null,
     ) {
         startDownloadDialogHelper?.release()
         startDownloadDialogHelper =
@@ -99,8 +99,11 @@ class DownloadTracker(
             )
     }
 
-    fun onSelectOptionsDownload(selectedKey: String) {
-        startDownloadDialogHelper?.onSelectOptionsDownload(selectedKey)
+    fun onSelectOptionsDownload(
+        selectedKey: String, successCallBack: (() -> Unit),
+        notSpaceError: (() -> Unit)
+    ) {
+        startDownloadDialogHelper?.onSelectOptionsDownload(selectedKey,successCallBack, notSpaceError)
     }
 
     fun onDismissOptionsDownload() {
@@ -266,14 +269,14 @@ class DownloadTracker(
         private val mediaItem: MediaItem,
         private val positiveCallback: (() -> Unit)? = null,
         private val dismissCallback: (() -> Unit)? = null,
-        private val preparedCallback: ((Map<String, String>) -> Unit)? = null
+        private val preparedCallback: ((Map<String, Double>) -> Unit)? = null
     ) : DownloadHelper.Callback {
 
 
         var formatDownloadable: MutableMap<String, Format> = mutableMapOf()
 
 
-        val optionsDownload: MutableMap<String, String> = mutableMapOf()
+        val optionsDownload: MutableMap<String, Double> = mutableMapOf()
 
         lateinit var qualitySelected: DefaultTrackSelector.Parameters
 
@@ -327,7 +330,7 @@ class DownloadTracker(
 
             formatDownloadable.forEach {
                 optionsDownload[it.key] =
-                    (it.value.bitrate * mediaItemTag.duration).div(8000).formatFileSize()
+                    (it.value.bitrate * mediaItemTag.duration).div(8000).toDouble()
             }
             preparedCallback?.invoke(optionsDownload)
         }
@@ -342,7 +345,11 @@ class DownloadTracker(
             )
         }
 
-        fun onSelectOptionsDownload(selectedKey: String) {
+        fun onSelectOptionsDownload(
+            selectedKey: String,
+            successCallBack: (() -> Unit),
+            notSpaceError: (() -> Unit)
+        ) {
             val format = formatDownloadable[selectedKey] ?: return
 
             qualitySelected = DefaultTrackSelector(context).buildUponParameters()
@@ -365,14 +372,16 @@ class DownloadTracker(
                     Util.getUtf8Bytes(estimatedContentLength.toString())
                 )
                 startDownload(downloadRequest)
+                successCallBack.invoke()
                 availableBytesLeft -= estimatedContentLength
                 Log.e(TAG, "availableBytesLeft after calculation: $availableBytesLeft")
             } else {
-                Toast.makeText(
-                    context,
-                    "Not enough space to download this file",
-                    Toast.LENGTH_LONG
-                ).show()
+                notSpaceError.invoke()
+//                Toast.makeText(
+//                    context,
+//                    "Not enough space to download this file",
+//                    Toast.LENGTH_LONG
+//                ).show()
             }
             positiveCallback?.invoke()
         }

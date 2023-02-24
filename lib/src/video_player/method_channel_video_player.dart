@@ -464,19 +464,29 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Future<Map<String, String>> getCacheOptions(int? textureId) async {
-    final result = await _channel.invokeMethod<Map?>('cacheOptions', {
-      'textureId': textureId,
-    });
-    return result != null ? Map<String, String>.from(result) : {};
+  Future<Map<String, double>> getCacheOptions(int? textureId, {required ValueChanged<String>? errorCallBack}) async {
+    try {
+      final result = await _channel.invokeMethod<Map?>('cacheOptions', {
+        'textureId': textureId,
+      });
+      return result != null ? Map<String, double>.from(result) : {};
+    } on PlatformException catch (e) {
+      errorCallBack?.call(e.code);
+      return {};
+    }
   }
 
   @override
-  Future<void> onSelectCacheOptions(int? textureId, {required String selectedKey}) async {
-    await _channel.invokeMethod<Map?>('selectCacheOptions', {
-      'textureId': textureId,
-      'selectedOptionsKey': selectedKey,
-    });
+  Future<void> onSelectCacheOptions(int? textureId,
+      {required String selectedKey, ValueChanged<String>? errorCallBack}) async {
+    try {
+      await _channel.invokeMethod<Map?>('selectCacheOptions', {
+        'textureId': textureId,
+        'selectedOptionsKey': selectedKey,
+      });
+    } on PlatformException catch (e) {
+      errorCallBack?.call(e.code);
+    }
   }
 
   @override

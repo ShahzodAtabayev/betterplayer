@@ -39,7 +39,7 @@ class _DownloadPageState extends State<DownloadPage> {
           ),
           IconButton(
             onPressed: () {
-              _hlsDownloaderPlugin.deleteAllDownloads();
+              HlsDownloader.deleteAllDownloads();
             },
             icon: Icon(Icons.delete),
           ),
@@ -63,7 +63,7 @@ class _DownloadPageState extends State<DownloadPage> {
           }),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final result = await _hlsDownloaderPlugin.getCacheOptions();
+          final result = await _hlsDownloaderPlugin.getCacheOptions(errorCallBack: (code) {});
           if (result != null) {
             showModalBottomSheet<dynamic>(
                 context: context,
@@ -84,7 +84,7 @@ class _DownloadPageState extends State<DownloadPage> {
 
                           return ListTile(
                             onTap: () {
-                              _hlsDownloaderPlugin.onSelectCacheOptions(key);
+                              _hlsDownloaderPlugin.onSelectCacheOptions(key, errorCallBack: (code) {});
                               Navigator.pop(context);
                             },
                             title: Text("Quality: ${key}p - $value"),

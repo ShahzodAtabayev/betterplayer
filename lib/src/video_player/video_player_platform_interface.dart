@@ -191,11 +191,12 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('create() has not been implemented.');
   }
 
-  Future<Map<String, String>?> getCacheOptions(int? textureId) {
+  Future<Map<String, double>?> getCacheOptions(int? textureId, {required ValueChanged<String>? errorCallBack}) {
     throw UnimplementedError('getCacheOptions() has not been implemented.');
   }
 
-  Future<void> onSelectCacheOptions(int? textureId, {required String selectedKey}) {
+  Future<void> onSelectCacheOptions(int? textureId,
+      {required String selectedKey, required ValueChanged<String>? errorCallBack}) {
     throw UnimplementedError('onSelectCacheOptions() has not been implemented.');
   }
 

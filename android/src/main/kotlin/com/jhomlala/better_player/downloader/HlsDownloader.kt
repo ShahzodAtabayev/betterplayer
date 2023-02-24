@@ -54,9 +54,11 @@ class HlsDownloader(
         }
     }
 
-    fun getOptionsDownload(preparedCallback: ((Map<String, String>) -> Unit)? = null) {
+    fun getOptionsDownload(
+        preparedCallback: ((Map<String, Double>) -> Unit)? = null,
+        errorCallback: ((String) -> Unit)? = null
+    ) {
         if (DownloadUtil.getDownloadTracker(context).isDownloaded(mediaItem)) {
-            //// TODO write error case
             return
         }
         val item = mediaItem.buildUpon()
@@ -71,17 +73,25 @@ class HlsDownloader(
                     preparedCallback?.invoke(it)
                 }
         } else {
-
+            errorCallback?.invoke("Cannot download this file")
         }
 
         Log.d(TAG, "get options success")
 
     }
 
-    fun onSelectOptionsDownload(selectedKey: String) {
+    fun onSelectOptionsDownload(
+        selectedKey: String,
+        successCallBack: (() -> Unit),
+        notSpaceError: (() -> Unit)
+    ) {
         Log.d(TAG, "select options key:${selectedKey}")
         DownloadUtil.getDownloadTracker(context)
-            .onSelectOptionsDownload(selectedKey = selectedKey)
+            .onSelectOptionsDownload(
+                selectedKey = selectedKey,
+                successCallBack = successCallBack,
+                notSpaceError = notSpaceError
+            )
     }
 
 
@@ -96,8 +106,19 @@ class HlsDownloader(
             Download.STATE_DOWNLOADING -> {
                 startFlow(context, download.request.uri)
             }
-            Download.STATE_QUEUED, Download.STATE_STOPPED -> {
-
+            Download.STATE_QUEUED -> {
+                val result: MutableMap<String, Any> = mutableMapOf()
+                result["status"] = "queued"
+                result["progress"] = 0.0
+                eventSink.success(result)
+                stopFlow()
+            }
+            Download.STATE_STOPPED -> {
+                val result: MutableMap<String, Any> = mutableMapOf()
+                result["status"] = "stopped"
+                result["progress"] = 0.0
+                eventSink.success(result)
+                stopFlow()
             }
             Download.STATE_COMPLETED -> {
                 val result: MutableMap<String, Any> = mutableMapOf()
@@ -108,9 +129,26 @@ class HlsDownloader(
                 Log.d(TAG, " Download.STATE_COMPLETED ==========================")
             }
             Download.STATE_REMOVING -> {
-
+                val result: MutableMap<String, Any> = mutableMapOf()
+                result["status"] = "removed"
+                result["progress"] = 0.0
+                eventSink.success(result)
+                stopFlow()
             }
-            Download.STATE_FAILED, Download.STATE_RESTARTING -> {}
+            Download.STATE_FAILED, Download.STATE_RESTARTING -> {
+                val result: MutableMap<String, Any> = mutableMapOf()
+                result["status"] = "failed"
+                result["progress"] = 0.0
+                eventSink.success(result)
+                stopFlow()
+            }
+            else -> {
+                val result: MutableMap<String, Any> = mutableMapOf()
+                result["status"] = "failed"
+                result["progress"] = 0.0
+                eventSink.success(result)
+                stopFlow()
+            }
         }
     }
 
