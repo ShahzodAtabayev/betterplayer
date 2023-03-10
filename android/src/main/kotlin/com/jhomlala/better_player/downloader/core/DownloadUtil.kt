@@ -94,6 +94,35 @@ object DownloadUtil {
         }
     }
 
+    fun getStateString(state: Int): String {
+        when (state) {
+            Download.STATE_QUEUED -> {
+                return "queued"
+            }
+            Download.STATE_STOPPED -> {
+                return "stopped"
+            }
+            Download.STATE_DOWNLOADING -> {
+                return "downloading"
+            }
+            Download.STATE_COMPLETED -> {
+                return "completed"
+            }
+            Download.STATE_FAILED -> {
+                return "failed"
+            }
+            Download.STATE_REMOVING -> {
+                return "removed"
+            }
+            Download.STATE_RESTARTING -> {
+                return "restarting"
+            }
+            else -> {
+                return "unknown"
+            }
+        }
+    }
+
     @Synchronized
     private fun getDownloadCache(context: Context): Cache {
         if (!DownloadUtil::downloadCache.isInitialized) {
@@ -112,7 +141,7 @@ object DownloadUtil {
                 getHttpDataSourceFactory(context),
                 Executors.newFixedThreadPool(6)
             ).apply {
-                maxParallelDownloads = 2
+                maxParallelDownloads = 3
             }
             downloadTracker =
                 DownloadTracker(context, getHttpDataSourceFactory(context), downloadManager)
@@ -144,4 +173,6 @@ object DownloadUtil {
             .setCacheWriteDataSinkFactory(null)
             .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
     }
+
+
 }

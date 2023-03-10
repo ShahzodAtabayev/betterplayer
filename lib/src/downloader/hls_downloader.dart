@@ -1,3 +1,4 @@
+import 'package:better_player/src/downloader/core/download.dart';
 import 'package:better_player/src/downloader/core/hls_downloader_configuration.dart';
 import 'package:better_player/src/video_player/video_player_platform_interface.dart';
 import 'package:better_player/src/downloader/core/download_event.dart';
@@ -7,6 +8,8 @@ import 'dart:async';
 final VideoPlayerPlatform _videoPlayerPlatform = VideoPlayerPlatform.instance;
 // This will clear all open videos on the platform when a full restart is
 // performed.
+
+enum HlsDownloaderErrorCodes { no_enough_space, cannot_download, unknown }
 
 class HlsDownloader {
   int? _textureId;
@@ -40,17 +43,29 @@ class HlsDownloader {
         _videoPlayerPlatform.downloadEventsFor(_textureId).listen(eventListener, onError: errorListener);
   }
 
-  Future<Map<String, double>?> getCacheOptions({required ValueChanged<String>? errorCallBack}) async {
+  Future<void> getCacheOptions({
+    required ValueChanged<Map<String, double>?> successCallBack,
+    required ValueChanged<HlsDownloaderErrorCodes>? errorCallBack,
+  }) async {
     if (!_isCreated) PlatformException(message: "not created", code: '');
-    return VideoPlayerPlatform.instance.getCacheOptions(_textureId, errorCallBack: errorCallBack);
+    await VideoPlayerPlatform.instance.getCacheOptions(
+      _textureId,
+      errorCallBack: errorCallBack,
+      successCallBack: successCallBack,
+    );
   }
 
-  Future<void> onSelectCacheOptions(String selectedKey, {required ValueChanged<String>? errorCallBack}) async {
+  Future<void> onSelectCacheOptions(
+    String selectedKey, {
+    required VoidCallback successCallBack,
+    required ValueChanged<HlsDownloaderErrorCodes>? errorCallBack,
+  }) async {
     if (!_isCreated) PlatformException(message: "not created", code: '');
     return VideoPlayerPlatform.instance.onSelectCacheOptions(
       _textureId,
       selectedKey: selectedKey,
       errorCallBack: errorCallBack,
+      successCallBack: successCallBack,
     );
   }
 
@@ -65,6 +80,10 @@ class HlsDownloader {
 
   static Future<void> deleteAllDownloads() async {
     return VideoPlayerPlatform.instance.onDeleteAllDownloads();
+  }
+
+  static Future<List<Download>> getDownloads() async {
+    return VideoPlayerPlatform.instance.getDownloads();
   }
 
   void dispose() {

@@ -94,7 +94,6 @@ class HlsDownloader(
             )
     }
 
-
     fun onDismissOptionsDownload() {
         Log.d(TAG, "dismiss options")
         DownloadUtil.getDownloadTracker(context)
@@ -108,75 +107,87 @@ class HlsDownloader(
             }
             Download.STATE_QUEUED -> {
                 val result: MutableMap<String, Any> = mutableMapOf()
+                result["url"] = download.request.uri.toString()
                 result["status"] = "queued"
                 result["progress"] = 0.0
                 eventSink.success(result)
-                stopFlow()
             }
             Download.STATE_STOPPED -> {
                 val result: MutableMap<String, Any> = mutableMapOf()
+                result["url"] = download.request.uri.toString()
                 result["status"] = "stopped"
                 result["progress"] = 0.0
                 eventSink.success(result)
-                stopFlow()
             }
             Download.STATE_COMPLETED -> {
                 val result: MutableMap<String, Any> = mutableMapOf()
-                result["status"] = "downloaded"
+                result["url"] = download.request.uri.toString()
+                result["status"] = "completed"
                 result["progress"] = 100.0
                 eventSink.success(result)
-                stopFlow()
+                stopFlow(download.request.uri)
                 Log.d(TAG, " Download.STATE_COMPLETED ==========================")
             }
             Download.STATE_REMOVING -> {
                 val result: MutableMap<String, Any> = mutableMapOf()
+                result["url"] = download.request.uri.toString()
                 result["status"] = "removed"
                 result["progress"] = 0.0
                 eventSink.success(result)
-                stopFlow()
+                stopFlow(download.request.uri)
             }
             Download.STATE_FAILED, Download.STATE_RESTARTING -> {
                 val result: MutableMap<String, Any> = mutableMapOf()
+                result["url"] = download.request.uri.toString()
                 result["status"] = "failed"
                 result["progress"] = 0.0
                 eventSink.success(result)
-                stopFlow()
+                stopFlow(download.request.uri)
             }
             else -> {
                 val result: MutableMap<String, Any> = mutableMapOf()
+                result["url"] = download.request.uri.toString()
                 result["status"] = "failed"
                 result["progress"] = 0.0
                 eventSink.success(result)
-                stopFlow()
+                stopFlow(download.request.uri)
             }
         }
     }
 
     private var coroutineScope: CoroutineScope? = null
+    private var coroutineScopes: MutableMap<Uri, CoroutineScope> = mutableMapOf()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun startFlow(context: Context, uri: Uri) {
-        coroutineScope?.cancel()
+
+        if (coroutineScopes.containsKey(uri)) {
+            coroutineScopes[uri]?.cancel()
+        }
         val job = SupervisorJob()
-        coroutineScope = CoroutineScope(Dispatchers.Main + job).apply {
+        coroutineScopes[uri] = CoroutineScope(Dispatchers.Main + job).apply {
             launch {
                 DownloadUtil.getDownloadTracker(context).getCurrentProgressDownload(uri).collect {
                     val result: MutableMap<String, Any> = mutableMapOf()
                     result["status"] = "downloading"
                     result["progress"] = it ?: 0
+                    result["url"] = uri.toString()
                     eventSink.success(result)
+                    Log.d(TAG, " Download.Downloading ${it}")
                 }
             }
         }
+
     }
 
-    private fun stopFlow() {
-        coroutineScope?.cancel()
+    private fun stopFlow(uri: Uri) {
+        coroutineScopes[uri]?.cancel()
     }
 
-    fun dispose() {
-        stopFlow()
+    fun dispose(uri: Uri?) {
+        uri?.let { stopFlow(uri) }
         DownloadUtil.getDownloadTracker(context).removeListener(this)
     }
+
 
 }

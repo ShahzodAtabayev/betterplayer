@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'dart:async';
-import 'dart:ui';
 import 'package:better_player/src/configuration/better_player_buffering_configuration.dart';
 import 'package:better_player/src/core/better_player_utils.dart';
+import 'package:better_player/src/downloader/core/download.dart';
 import 'package:better_player/src/downloader/core/download_event.dart';
 import 'package:better_player/src/downloader/core/hls_downloader_configuration.dart';
+import 'package:better_player/src/downloader/hls_downloader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -464,28 +465,42 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Future<Map<String, double>> getCacheOptions(int? textureId, {required ValueChanged<String>? errorCallBack}) async {
+  Future<void> getCacheOptions(int? textureId,
+      {required ValueChanged<Map<String, double>> successCallBack,
+      required ValueChanged<HlsDownloaderErrorCodes>? errorCallBack}) async {
     try {
-      final result = await _channel.invokeMethod<Map?>('cacheOptions', {
-        'textureId': textureId,
-      });
-      return result != null ? Map<String, double>.from(result) : {};
+      final result = await _channel.invokeMethod<Map?>('cacheOptions', {'textureId': textureId});
+      successCallBack.call(result != null ? Map<String, double>.from(result) : {});
     } on PlatformException catch (e) {
-      errorCallBack?.call(e.code);
-      return {};
+      HlsDownloaderErrorCodes code;
+      try {
+        code = HlsDownloaderErrorCodes.values.byName(e.code);
+      } catch (_) {
+        code = HlsDownloaderErrorCodes.unknown;
+      }
+      errorCallBack?.call(code);
     }
   }
 
   @override
   Future<void> onSelectCacheOptions(int? textureId,
-      {required String selectedKey, ValueChanged<String>? errorCallBack}) async {
+      {required String selectedKey,
+      required VoidCallback successCallBack,
+      ValueChanged<HlsDownloaderErrorCodes>? errorCallBack}) async {
     try {
       await _channel.invokeMethod<Map?>('selectCacheOptions', {
         'textureId': textureId,
         'selectedOptionsKey': selectedKey,
       });
+      successCallBack.call();
     } on PlatformException catch (e) {
-      errorCallBack?.call(e.code);
+      HlsDownloaderErrorCodes code;
+      try {
+        code = HlsDownloaderErrorCodes.values.byName(e.code);
+      } catch (_) {
+        code = HlsDownloaderErrorCodes.unknown;
+      }
+      errorCallBack?.call(code);
     }
   }
 
@@ -497,6 +512,24 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   @override
   Future<void> onDeleteAllDownloads() async {
     await _channel.invokeMethod<void>('deleteAllDownload');
+  }
+
+  @override
+  Future<List<Download>> getDownloads() async {
+    final List<Download> downloads = [];
+    final result = await _channel.invokeMethod<List<Object?>?>('getDownloads');
+    result?.forEach((element) {
+      if (element != null) {
+        final map = Map<String, dynamic>.from(element as Map);
+        final download = Download(
+          url: map['url'],
+          percentDownloaded: map['percent_downloaded'],
+          status: DownloadStatus.values.byName(map['state']),
+        );
+        downloads.add(download);
+      }
+    });
+    return downloads;
   }
 
   @override
@@ -512,6 +545,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
         map = event;
       }
       return DownloadEvent(
+        url: map["url"] ?? '',
         progress: double.tryParse(map["progress"].toString()) ?? 0,
         status: DownloadStatus.values.byName(map["status"].toString()),
       );

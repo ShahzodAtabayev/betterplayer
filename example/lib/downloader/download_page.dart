@@ -63,38 +63,44 @@ class _DownloadPageState extends State<DownloadPage> {
           }),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final result = await _hlsDownloaderPlugin.getCacheOptions(errorCallBack: (code) {});
-          if (result != null) {
-            showModalBottomSheet<dynamic>(
-                context: context,
-                builder: (_) {
-                  return Container(
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16),
-                      ),
-                    ),
-                    child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: result.keys.length,
-                        itemBuilder: (_, index) {
-                          final key = result.keys.elementAt(index);
-                          final value = result.values.elementAt(index);
+          await _hlsDownloaderPlugin.getCacheOptions(
+            errorCallBack: (code) {},
+            successCallBack: (result) {
+              if (result != null) {
+                showModalBottomSheet<dynamic>(
+                    context: context,
+                    builder: (_) {
+                      return Container(
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(16),
+                            topRight: Radius.circular(16),
+                          ),
+                        ),
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: result.keys.length,
+                            itemBuilder: (_, index) {
+                              final key = result.keys.elementAt(index);
+                              final value = result.values.elementAt(index);
 
-                          return ListTile(
-                            onTap: () {
-                              _hlsDownloaderPlugin.onSelectCacheOptions(key, errorCallBack: (code) {});
-                              Navigator.pop(context);
-                            },
-                            title: Text("Quality: ${key}p - $value"),
-                          );
-                        }),
-                  );
-                });
-          } else {
-            print("no result");
-          }
+                              return ListTile(
+                                onTap: () {
+                                  _hlsDownloaderPlugin.onSelectCacheOptions(
+                                    key,
+                                    errorCallBack: (code) {},
+                                    successCallBack: () {},
+                                  );
+                                  Navigator.pop(context);
+                                },
+                                title: Text("Quality: ${key}p - $value"),
+                              );
+                            }),
+                      );
+                    });
+              }
+            },
+          );
         },
         child: const Icon(Icons.download),
       ),

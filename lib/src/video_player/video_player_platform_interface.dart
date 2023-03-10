@@ -8,8 +8,10 @@ import 'dart:ui';
 
 // Flutter imports:
 import 'package:better_player/src/configuration/better_player_buffering_configuration.dart';
+import 'package:better_player/src/downloader/core/download.dart';
 import 'package:better_player/src/downloader/core/download_event.dart';
 import 'package:better_player/src/downloader/core/hls_downloader_configuration.dart';
+import 'package:better_player/src/downloader/hls_downloader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
@@ -191,12 +193,16 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('create() has not been implemented.');
   }
 
-  Future<Map<String, double>?> getCacheOptions(int? textureId, {required ValueChanged<String>? errorCallBack}) {
+  Future<void> getCacheOptions(int? textureId,
+      {required ValueChanged<Map<String, double>> successCallBack,
+      required ValueChanged<HlsDownloaderErrorCodes>? errorCallBack}) {
     throw UnimplementedError('getCacheOptions() has not been implemented.');
   }
 
   Future<void> onSelectCacheOptions(int? textureId,
-      {required String selectedKey, required ValueChanged<String>? errorCallBack}) {
+      {required String selectedKey,
+      required VoidCallback successCallBack,
+      required ValueChanged<HlsDownloaderErrorCodes>? errorCallBack}) {
     throw UnimplementedError('onSelectCacheOptions() has not been implemented.');
   }
 
@@ -210,6 +216,10 @@ abstract class VideoPlayerPlatform {
 
   Future<void> onDeleteAllDownloads() {
     throw UnimplementedError('onSelectCacheOptions() has not been implemented.');
+  }
+
+  Future<List<Download>> getDownloads() {
+    throw UnimplementedError('getDownloads() has not been implemented.');
   }
 
   /// Returns a Stream of []s.

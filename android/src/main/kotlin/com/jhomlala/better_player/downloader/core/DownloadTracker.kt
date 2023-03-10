@@ -103,7 +103,11 @@ class DownloadTracker(
         selectedKey: String, successCallBack: (() -> Unit),
         notSpaceError: (() -> Unit)
     ) {
-        startDownloadDialogHelper?.onSelectOptionsDownload(selectedKey,successCallBack, notSpaceError)
+        startDownloadDialogHelper?.onSelectOptionsDownload(
+            selectedKey,
+            successCallBack,
+            notSpaceError
+        )
     }
 
     fun onDismissOptionsDownload() {
@@ -239,6 +243,8 @@ class DownloadTracker(
             for (listener in listeners) {
                 listener.onDownloadsChanged(download)
             }
+            Log.d("TTT", "URL: ${download.request.uri.path}")
+            Log.d("TTT", "PercentDownloaded: ${download.percentDownloaded}")
             if (download.state == Download.STATE_COMPLETED) {
                 // Add delta between estimation and reality to have a better availableBytesLeft
                 availableBytesLeft += Util.fromUtf8Bytes(download.request.data)
