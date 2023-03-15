@@ -173,6 +173,32 @@ class DownloadTracker(
         }
     }
 
+    fun resumeDownload(uri: Uri?) {
+        val download = downloads[uri]
+        download?.let {
+            DownloadService.sendSetStopReason(
+                applicationContext,
+                MyDownloadService::class.java,
+                it.request.id,
+                Download.STOP_REASON_NONE,
+                true
+            )
+        }
+    }
+
+    fun pauseDownload(uri: Uri?) {
+        val download = downloads[uri]
+        download?.let {
+            DownloadService.sendSetStopReason(
+                applicationContext,
+                MyDownloadService::class.java,
+                it.request.id,
+                Download.STATE_STOPPED,
+                false
+            )
+        }
+    }
+
     fun removeAllDownloads() {
         DownloadService.sendRemoveAllDownloads(
             applicationContext,
@@ -243,10 +269,7 @@ class DownloadTracker(
             for (listener in listeners) {
                 listener.onDownloadsChanged(download)
             }
-            Log.d("TTT", "URL: ${download.request.uri.path}")
-            Log.d("TTT", "PercentDownloaded: ${download.percentDownloaded}")
             if (download.state == Download.STATE_COMPLETED) {
-                // Add delta between estimation and reality to have a better availableBytesLeft
                 availableBytesLeft += Util.fromUtf8Bytes(download.request.data)
                     .toLong() - download.bytesDownloaded
             }

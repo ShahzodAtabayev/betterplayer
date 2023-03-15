@@ -14,11 +14,12 @@ import com.jhomlala.better_player.downloader.core.DownloadTracker
 import io.flutter.plugin.common.EventChannel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
+import java.lang.Exception
 
 class HlsDownloader(
     private val context: Context,
     private val eventChannel: EventChannel,
-    private val url: String,
+    val url: String,
     private val duration: Long
 ) :
     DownloadTracker.Listener {
@@ -32,6 +33,8 @@ class HlsDownloader(
     }
 
     private val eventSink = QueuingEventSink()
+
+    private var coroutineScopes: MutableMap<Uri, CoroutineScope> = mutableMapOf()
 
     init {
         eventChannel.setStreamHandler(
@@ -72,11 +75,11 @@ class HlsDownloader(
                 .getDownloadOptionsHelper(context, item) {
                     preparedCallback?.invoke(it)
                 }
+            Log.d(TAG, "get options success")
         } else {
             errorCallback?.invoke("Cannot download this file")
         }
 
-        Log.d(TAG, "get options success")
 
     }
 
@@ -118,6 +121,7 @@ class HlsDownloader(
                 result["status"] = "stopped"
                 result["progress"] = 0.0
                 eventSink.success(result)
+                stopFlow(download.request.uri)
             }
             Download.STATE_COMPLETED -> {
                 val result: MutableMap<String, Any> = mutableMapOf()
@@ -136,13 +140,21 @@ class HlsDownloader(
                 eventSink.success(result)
                 stopFlow(download.request.uri)
             }
-            Download.STATE_FAILED, Download.STATE_RESTARTING -> {
+            Download.STATE_FAILED -> {
                 val result: MutableMap<String, Any> = mutableMapOf()
                 result["url"] = download.request.uri.toString()
                 result["status"] = "failed"
                 result["progress"] = 0.0
                 eventSink.success(result)
                 stopFlow(download.request.uri)
+            }
+            Download.STATE_RESTARTING -> {
+                val result: MutableMap<String, Any> = mutableMapOf()
+                result["url"] = download.request.uri.toString()
+                result["status"] = "restarting"
+                result["progress"] = 0.0
+                eventSink.success(result)
+                startFlow(context, download.request.uri)
             }
             else -> {
                 val result: MutableMap<String, Any> = mutableMapOf()
@@ -155,12 +167,9 @@ class HlsDownloader(
         }
     }
 
-    private var coroutineScope: CoroutineScope? = null
-    private var coroutineScopes: MutableMap<Uri, CoroutineScope> = mutableMapOf()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun startFlow(context: Context, uri: Uri) {
-
         if (coroutineScopes.containsKey(uri)) {
             coroutineScopes[uri]?.cancel()
         }
@@ -173,21 +182,20 @@ class HlsDownloader(
                     result["progress"] = it ?: 0
                     result["url"] = uri.toString()
                     eventSink.success(result)
-                    Log.d(TAG, " Download.Downloading ${it}")
+                    Log.d(TAG, "$it $eventChannel")
                 }
             }
         }
-
     }
 
     private fun stopFlow(uri: Uri) {
-        coroutineScopes[uri]?.cancel()
+        if (coroutineScopes[uri] != null && coroutineScopes[uri]!!.isActive) {
+            coroutineScopes[uri]?.cancel()
+        }
     }
 
     fun dispose(uri: Uri?) {
         uri?.let { stopFlow(uri) }
         DownloadUtil.getDownloadTracker(context).removeListener(this)
     }
-
-
 }

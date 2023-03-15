@@ -211,11 +211,19 @@ abstract class VideoPlayerPlatform {
   }
 
   Future<void> onDeleteDownload(String? url) {
-    throw UnimplementedError('onSelectCacheOptions() has not been implemented.');
+    throw UnimplementedError('onDeleteDownload() has not been implemented.');
+  }
+
+  Future<void> onResumeDownload(String? url) {
+    throw UnimplementedError('onResumeDownload() has not been implemented.');
+  }
+
+  Future<void> onPauseDownload(String? url) {
+    throw UnimplementedError('onPauseDownload() has not been implemented.');
   }
 
   Future<void> onDeleteAllDownloads() {
-    throw UnimplementedError('onSelectCacheOptions() has not been implemented.');
+    throw UnimplementedError('onDeleteAllDownloads() has not been implemented.');
   }
 
   Future<List<Download>> getDownloads() {

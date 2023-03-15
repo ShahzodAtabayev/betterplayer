@@ -445,7 +445,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   @override
   Future<void> disposeDownloader(int? textureId) {
     return _channel.invokeMethod<void>(
-      'dispose',
+      'disposeDownloader',
       <String, dynamic>{'textureId': textureId},
     );
   }
@@ -507,6 +507,16 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   @override
   Future<void> onDeleteDownload(String? url) async {
     await _channel.invokeMethod<void>('deleteDownload', {"url": url});
+  }
+
+  @override
+  Future<void> onPauseDownload(String? url) async {
+    await _channel.invokeMethod<void>('pauseDownload', {"url": url});
+  }
+
+  @override
+  Future<void> onResumeDownload(String? url) async {
+    return _channel.invokeMethod<void>('resumeDownload', {"url": url});
   }
 
   @override

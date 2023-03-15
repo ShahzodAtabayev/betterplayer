@@ -1,7 +1,7 @@
-import 'package:better_player/src/downloader/core/download.dart';
 import 'package:better_player/src/downloader/core/hls_downloader_configuration.dart';
 import 'package:better_player/src/video_player/video_player_platform_interface.dart';
 import 'package:better_player/src/downloader/core/download_event.dart';
+import 'package:better_player/src/downloader/core/download.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 
@@ -74,8 +74,22 @@ class HlsDownloader {
     return VideoPlayerPlatform.instance.onDismissCacheOptions(_textureId);
   }
 
+  Future<void> dispose() async {
+    if (!_isCreated) return;
+    await VideoPlayerPlatform.instance.disposeDownloader(_textureId);
+    _eventSubscription?.cancel();
+  }
+
   static Future<void> deleteDownload(String url) async {
     return VideoPlayerPlatform.instance.onDeleteDownload(url);
+  }
+
+  static Future<void> pauseDownload(String url) async {
+    return VideoPlayerPlatform.instance.onPauseDownload(url);
+  }
+
+  static Future<void> resumeDownload(String url) async {
+    await VideoPlayerPlatform.instance.onResumeDownload(url);
   }
 
   static Future<void> deleteAllDownloads() async {
@@ -84,9 +98,5 @@ class HlsDownloader {
 
   static Future<List<Download>> getDownloads() async {
     return VideoPlayerPlatform.instance.getDownloads();
-  }
-
-  void dispose() {
-    _eventSubscription?.cancel();
   }
 }
