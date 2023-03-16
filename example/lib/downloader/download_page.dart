@@ -16,7 +16,7 @@ class _DownloadPageState extends State<DownloadPage> {
 
   @override
   void initState() {
-    final configuration = HlsDownloaderConfiguration(url: url, duration: duration);
+    final configuration = HlsDownloaderConfiguration(url: url, duration: duration, title: "the-boss-baby");
     _hlsDownloaderPlugin.create(configuration: configuration).whenComplete(() {
       print("Created success");
     });

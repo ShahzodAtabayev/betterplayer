@@ -11,8 +11,6 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.HttpDataSource
 import com.google.android.exoplayer2.upstream.cache.Cache
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
-import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor
-import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.exoplayer2.database.StandaloneDatabaseProvider
 import com.google.android.exoplayer2.ext.cronet.CronetDataSource
 import com.google.android.exoplayer2.ext.cronet.CronetEngineWrapper
@@ -23,7 +21,7 @@ import java.util.concurrent.Executors
 
 object DownloadUtil {
 
-    const val DOWNLOAD_NOTIFICATION_CHANNEL_ID = "download_channel"
+    const val DOWNLOAD_NOTIFICATION_CHANNEL_ID = "Voxe download"
     private const val TAG = "DownloadUtil"
     private const val DOWNLOAD_CONTENT_DIRECTORY = "downloads"
     private lateinit var databaseProvider: DatabaseProvider
@@ -86,10 +84,10 @@ object DownloadUtil {
             Download.STATE_COMPLETED -> context.resources.getString(R.string.exo_download_completed)
             Download.STATE_DOWNLOADING -> context.resources.getString(R.string.exo_download_downloading)
             Download.STATE_FAILED -> context.resources.getString(R.string.exo_download_failed)
-            Download.STATE_QUEUED -> "exo_download_queued"
+            Download.STATE_QUEUED -> "context.resources.getString(R.string.exo_download_queued)"
             Download.STATE_REMOVING -> context.resources.getString(R.string.exo_download_removing)
-            Download.STATE_RESTARTING -> "exo_download_restarting"
-            Download.STATE_STOPPED -> "exo_download_stopped"
+            Download.STATE_RESTARTING -> "context.resources.getString(R.string.exo_download_restarting)"
+            Download.STATE_STOPPED -> "context.resources.getString(R.string.exo_download_stopped)"
             else -> throw IllegalArgumentException()
         }
     }

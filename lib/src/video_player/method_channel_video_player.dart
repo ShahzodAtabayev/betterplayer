@@ -457,6 +457,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
       <String, dynamic>{
         'url': configuration.url,
         'duration': configuration.duration,
+        'title': configuration.title,
       },
     );
 

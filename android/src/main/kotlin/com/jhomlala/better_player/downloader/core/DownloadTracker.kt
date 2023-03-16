@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.net.Uri
 import android.os.StatFs
-import android.view.View
 import android.widget.Toast
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultRenderersFactory
@@ -115,58 +114,58 @@ class DownloadTracker(
     }
 
 
-    fun toggleDownloadPopupMenu(context: Context, anchor: View, uri: Uri?) {
-//        val popupMenu = PopupMenu(context, anchor).apply { inflate(R.menu.popup_menu) }
-//        val download = downloads[uri]
-//        download ?: return
-//
-//        popupMenu.menu.apply {
-//            findItem(R.id.cancel_download).isVisible =
-//                listOf(
-//                    Download.STATE_DOWNLOADING,
-//                    Download.STATE_STOPPED,
-//                    Download.STATE_QUEUED,
-//                    Download.STATE_FAILED
-//                ).contains(download.state)
-//            findItem(R.id.delete_download).isVisible = download.state == Download.STATE_COMPLETED
-//            findItem(R.id.resume_download).isVisible =
-//                listOf(Download.STATE_STOPPED, Download.STATE_FAILED).contains(download.state)
-//            findItem(R.id.pause_download).isVisible = download.state == Download.STATE_DOWNLOADING
-//        }
-//
-//        popupMenu.setOnMenuItemClickListener {
-//            when (it.itemId) {
-//                R.id.cancel_download, R.id.delete_download -> removeDownload(download.request.uri)
-//                R.id.resume_download -> {
-//                    DownloadService.sendSetStopReason(
-//                        context,
-//                        MyDownloadService::class.java,
-//                        download.request.id,
-//                        Download.STOP_REASON_NONE,
-//                        true
-//                    )
-//                }
-//                R.id.pause_download -> {
-//                    DownloadService.sendSetStopReason(
-//                        context,
-//                        MyDownloadService::class.java,
-//                        download.request.id,
-//                        Download.STATE_STOPPED,
-//                        false
-//                    )
-//                }
-//            }
-//            return@setOnMenuItemClickListener true
-//        }
-//        popupMenu.show()
-    }
+//    fun toggleDownloadPopupMenu(context: Context, anchor: View, uri: Uri?) {
+////        val popupMenu = PopupMenu(context, anchor).apply { inflate(R.menu.popup_menu) }
+////        val download = downloads[uri]
+////        download ?: return
+////
+////        popupMenu.menu.apply {
+////            findItem(R.id.cancel_download).isVisible =
+////                listOf(
+////                    Download.STATE_DOWNLOADING,
+////                    Download.STATE_STOPPED,
+////                    Download.STATE_QUEUED,
+////                    Download.STATE_FAILED
+////                ).contains(download.state)
+////            findItem(R.id.delete_download).isVisible = download.state == Download.STATE_COMPLETED
+////            findItem(R.id.resume_download).isVisible =
+////                listOf(Download.STATE_STOPPED, Download.STATE_FAILED).contains(download.state)
+////            findItem(R.id.pause_download).isVisible = download.state == Download.STATE_DOWNLOADING
+////        }
+////
+////        popupMenu.setOnMenuItemClickListener {
+////            when (it.itemId) {
+////                R.id.cancel_download, R.id.delete_download -> removeDownload(download.request.uri)
+////                R.id.resume_download -> {
+////                    DownloadService.sendSetStopReason(
+////                        context,
+////                        MyDownloadService::class.java,
+////                        download.request.id,
+////                        Download.STOP_REASON_NONE,
+////                        true
+////                    )
+////                }
+////                R.id.pause_download -> {
+////                    DownloadService.sendSetStopReason(
+////                        context,
+////                        MyDownloadService::class.java,
+////                        download.request.id,
+////                        Download.STATE_STOPPED,
+////                        false
+////                    )
+////                }
+////            }
+////            return@setOnMenuItemClickListener true
+////        }
+////        popupMenu.show()
+//    }
 
     fun removeDownload(uri: Uri?) {
         val download = downloads[uri]
         download?.let {
             DownloadService.sendRemoveDownload(
                 applicationContext,
-                MyDownloadService::class.java,
+                VoxeDownloadService::class.java,
                 download.request.id,
                 false
             )
@@ -178,7 +177,7 @@ class DownloadTracker(
         download?.let {
             DownloadService.sendSetStopReason(
                 applicationContext,
-                MyDownloadService::class.java,
+                VoxeDownloadService::class.java,
                 it.request.id,
                 Download.STOP_REASON_NONE,
                 true
@@ -191,7 +190,7 @@ class DownloadTracker(
         download?.let {
             DownloadService.sendSetStopReason(
                 applicationContext,
-                MyDownloadService::class.java,
+                VoxeDownloadService::class.java,
                 it.request.id,
                 Download.STATE_STOPPED,
                 false
@@ -202,7 +201,7 @@ class DownloadTracker(
     fun removeAllDownloads() {
         DownloadService.sendRemoveAllDownloads(
             applicationContext,
-            MyDownloadService::class.java,
+            VoxeDownloadService::class.java,
             false
         )
     }
@@ -397,20 +396,15 @@ class DownloadTracker(
                     .div(C.BITS_PER_BYTE)
             if (availableBytesLeft > estimatedContentLength) {
                 val downloadRequest: DownloadRequest = downloadHelper.getDownloadRequest(
-                    (mediaItem.localConfiguration?.tag as MediaItemTag).title,
+                    (mediaItem.localConfiguration?.tag as MediaItemTag).url,
                     Util.getUtf8Bytes(estimatedContentLength.toString())
                 )
-                startDownload(downloadRequest)
+                startDownload(downloadRequest, mediaItemTag.title)
                 successCallBack.invoke()
                 availableBytesLeft -= estimatedContentLength
                 Log.e(TAG, "availableBytesLeft after calculation: $availableBytesLeft")
             } else {
                 notSpaceError.invoke()
-//                Toast.makeText(
-//                    context,
-//                    "Not enough space to download this file",
-//                    Toast.LENGTH_LONG
-//                ).show()
             }
             positiveCallback?.invoke()
         }
@@ -421,18 +415,28 @@ class DownloadTracker(
         }
 
         // Internal methods.
-        private fun startDownload(downloadRequest: DownloadRequest = buildDownloadRequest()) {
-            DownloadService.sendAddDownload(
+        private fun startDownload(
+            downloadRequest: DownloadRequest = buildDownloadRequest(),
+            title: String
+        ) {
+            sendAddDownloadVoxe(
                 applicationContext,
-                MyDownloadService::class.java,
+                VoxeDownloadService::class.java,
                 downloadRequest,
-                true
+                true,
+                title
             )
+//            DownloadService.sendAddDownload(
+//                applicationContext,
+//                VoxeDownloadService::class.java,
+//                downloadRequest,
+//                true
+//            )
         }
 
         private fun buildDownloadRequest(): DownloadRequest {
             return downloadHelper.getDownloadRequest(
-                (mediaItem.localConfiguration?.tag as MediaItemTag).title,
+                (mediaItem.localConfiguration?.tag as MediaItemTag).url,
                 Util.getUtf8Bytes(mediaItem.localConfiguration?.uri.toString())
             )
         }

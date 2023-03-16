@@ -14,7 +14,6 @@ import android.os.Looper
 import android.util.Log
 import android.util.LongSparseArray
 import androidx.core.util.forEach
-import com.jhomlala.better_player.BetterPlayerCache.releaseCache
 import com.jhomlala.better_player.downloader.HlsDownloader
 import com.jhomlala.better_player.downloader.core.DownloadUtil
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -75,7 +74,7 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
             Log.wtf(TAG, "Detached from the engine before registering to it.")
         }
         disposeAllPlayers()
-        releaseCache()
+//        releaseCache()
         flutterState!!.stopListening()
         flutterState = null
     }
@@ -482,6 +481,7 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
     private fun createDownloader(call: MethodCall, result: MethodChannel.Result) {
         val url = call.argument<String>(URL_PARAMETER) ?: ""
         val duration = call.argument<Int>(DURATION) ?: 1
+        val title = call.argument<String>(MOVIE_TITLE) ?: ""
         val handle = flutterState!!.textureRegistry!!.createSurfaceTexture()
         val eventChannel =
             EventChannel(
@@ -494,7 +494,8 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                 flutterState!!.applicationContext,
                 eventChannel,
                 url = url,
-                duration = duration.toLong()
+                duration = duration.toLong(),
+                title = title
             )
         )
         val reply: MutableMap<String, Any> = HashMap()
@@ -703,6 +704,7 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         private const val DISMISS_CACHE_OPTIONS_METHOD = "dismissCacheOptions"
         private const val DISPOSE_DOWNLOADER = "disposeDownloader"
         private const val GET_DOWNLOADS = "getDownloads"
+        const val MOVIE_TITLE = "title"
 
     }
 }

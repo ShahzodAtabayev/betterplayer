@@ -20,7 +20,8 @@ class HlsDownloader(
     private val context: Context,
     private val eventChannel: EventChannel,
     val url: String,
-    private val duration: Long
+    private val duration: Long,
+    private val title: String,
 ) :
     DownloadTracker.Listener {
 
@@ -28,7 +29,7 @@ class HlsDownloader(
         MediaItem.Builder()
             .setUri(url)
             .setMimeType(MimeTypes.APPLICATION_M3U8)
-            .setTag(MediaItemTag(duration, url))
+            .setTag(MediaItemTag(duration, url, title))
             .build()
     }
 
@@ -77,10 +78,8 @@ class HlsDownloader(
                 }
             Log.d(TAG, "get options success")
         } else {
-            errorCallback?.invoke("Cannot download this file")
+            errorCallback?.invoke("This file already exits")
         }
-
-
     }
 
     fun onSelectOptionsDownload(
@@ -182,7 +181,6 @@ class HlsDownloader(
                     result["progress"] = it ?: 0
                     result["url"] = uri.toString()
                     eventSink.success(result)
-                    Log.d(TAG, "$it $eventChannel")
                 }
             }
         }
