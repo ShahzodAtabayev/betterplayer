@@ -494,7 +494,7 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                 flutterState!!.applicationContext,
                 eventChannel,
                 url = url,
-                duration = duration.toLong(),
+                duration = duration.toLong() * 1000,
                 title = title
             )
         )

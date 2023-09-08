@@ -69,6 +69,18 @@ class HlsDownloader {
     );
   }
 
+  Future<void> playIos({
+    required VoidCallback successCallBack,
+    required ValueChanged<HlsDownloaderErrorCodes>? errorCallBack,
+  }) async {
+    if (!_isCreated) PlatformException(message: "not created", code: '');
+    return VideoPlayerPlatform.instance.playIos(
+      _textureId,
+      errorCallBack: errorCallBack,
+      successCallBack: successCallBack,
+    );
+  }
+
   Future<void> onDismissCacheOptions() async {
     if (!_isCreated) PlatformException(message: "not created", code: '');
     return VideoPlayerPlatform.instance.onDismissCacheOptions(_textureId);
@@ -94,6 +106,10 @@ class HlsDownloader {
 
   static Future<void> deleteAllDownloads() async {
     return VideoPlayerPlatform.instance.onDeleteAllDownloads();
+  }
+
+  static Future<DownloadState> getDownloadState({required String url}) async {
+    return VideoPlayerPlatform.instance.getDownloadState(url);
   }
 
   static Future<List<Download>> getDownloads() async {

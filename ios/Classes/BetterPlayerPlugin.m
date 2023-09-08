@@ -22,13 +22,15 @@ bool _remoteCommandsInitialized = false;
 
 #pragma mark - FlutterPlugin protocol
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-    FlutterMethodChannel* channel =
-    [FlutterMethodChannel methodChannelWithName:@"better_player_channel"
-                                binaryMessenger:[registrar messenger]];
-    BetterPlayerPlugin* instance = [[BetterPlayerPlugin alloc] initWithRegistrar:registrar];
-    [registrar addMethodCallDelegate:instance channel:channel];
-    //[registrar publish:instance];
-    [registrar registerViewFactory:instance withId:@"com.jhomlala/better_player"];
+    [SwiftBetterPlayerPlugin registerWithRegistrar:registrar];
+//
+//    FlutterMethodChannel* channel =
+//    [FlutterMethodChannel methodChannelWithName:@"better_player_channel"
+//                                binaryMessenger:[registrar messenger]];
+//    BetterPlayerPlugin* instance = [[BetterPlayerPlugin alloc] initWithRegistrar:registrar];
+//    [registrar addMethodCallDelegate:instance channel:channel];
+//    //[registrar publish:instance];
+//    [registrar registerViewFactory:instance withId:@"com.jhomlala/better_player"];
 }
 
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {

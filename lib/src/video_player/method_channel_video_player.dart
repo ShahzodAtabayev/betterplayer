@@ -460,7 +460,6 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
         'title': configuration.title,
       },
     );
-
     final response = responseLinkedHashMap != null ? Map<String, dynamic>.from(responseLinkedHashMap) : null;
     return response?["textureId"];
   }
@@ -506,6 +505,23 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<void> playIos(int? textureId,
+      {required VoidCallback successCallBack, required ValueChanged<HlsDownloaderErrorCodes>? errorCallBack}) async {
+    try {
+      await _channel.invokeMethod<Map?>('playIos', {'textureId': textureId});
+      successCallBack.call();
+    } on PlatformException catch (e) {
+      HlsDownloaderErrorCodes code;
+      try {
+        code = HlsDownloaderErrorCodes.values.byName(e.code);
+      } catch (_) {
+        code = HlsDownloaderErrorCodes.unknown;
+      }
+      errorCallBack?.call(code);
+    }
+  }
+
+  @override
   Future<void> onDeleteDownload(String? url) async {
     await _channel.invokeMethod<void>('deleteDownload', {"url": url});
   }
@@ -526,16 +542,29 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<DownloadState> getDownloadState(String? url) async {
+    final result = await _channel.invokeMethod<String?>('getDownloadState', {"url": url});
+    if (result != null) {
+      try {
+        return DownloadState.values.byName(result);
+      } catch (_) {}
+    }
+    return DownloadState.initial;
+  }
+
+  @override
   Future<List<Download>> getDownloads() async {
     final List<Download> downloads = [];
     final result = await _channel.invokeMethod<List<Object?>?>('getDownloads');
+    print(result);
+    print("---------------------");
     result?.forEach((element) {
       if (element != null) {
         final map = Map<String, dynamic>.from(element as Map);
         final download = Download(
           url: map['url'],
           percentDownloaded: map['percent_downloaded'],
-          status: DownloadStatus.values.byName(map['state']),
+          status: DownloadState.values.byName(map['state']),
         );
         downloads.add(download);
       }
@@ -556,9 +585,10 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
         map = event;
       }
       return DownloadEvent(
+        size: map["size"],
         url: map["url"] ?? '',
         progress: double.tryParse(map["progress"].toString()) ?? 0,
-        status: DownloadStatus.values.byName(map["status"].toString()),
+        status: DownloadState.values.byName(map["status"].toString()),
       );
     });
   }

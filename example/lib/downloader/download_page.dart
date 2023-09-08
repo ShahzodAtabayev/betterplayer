@@ -1,6 +1,14 @@
-import 'package:better_player_example/downloader/player/player_page.dart';
+import 'package:better_player_example/downloader/download_item.dart';
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
+
+class ContentModel {
+  final String url;
+  final String name;
+  final int duration;
+
+  ContentModel({required this.url, required this.name, required this.duration});
+}
 
 class DownloadPage extends StatefulWidget {
   const DownloadPage({Key? key}) : super(key: key);
@@ -10,16 +18,22 @@ class DownloadPage extends StatefulWidget {
 }
 
 class _DownloadPageState extends State<DownloadPage> {
-  final _hlsDownloaderPlugin = HlsDownloader();
-  final url = 'https://cdn.voxe.tv/s3/trailers/the-boss-baby-family-business-official-trailer/master.m3u8';
-  final duration = 148000; //ms
+  final List<ContentModel> _list = [
+    ContentModel(
+      url: "https://cdn.voxe.tv/s3/trailers/the-boss-baby-family-business-official-trailer/master.m3u8",
+      name: "Boss family trailer",
+      duration: 137,
+    ),
+    ContentModel(
+      url: "https://videos.voxe.tv/movies/ford-protiv-ferrari-Qv-qKBNmEXV/master.m3u8",
+      name: "Ford Ferrari",
+      duration: 9120,
+    ),
+  ];
 
   @override
   void initState() {
-    final configuration = HlsDownloaderConfiguration(url: url, duration: duration, title: "the-boss-baby");
-    _hlsDownloaderPlugin.create(configuration: configuration).whenComplete(() {
-      print("Created success");
-    });
+    HlsDownloader.getDownloads();
     super.initState();
   }
 
@@ -30,11 +44,7 @@ class _DownloadPageState extends State<DownloadPage> {
         title: const Text("Example"),
         actions: [
           IconButton(
-            onPressed: () async {
-              Navigator.push<dynamic>(context, MaterialPageRoute<dynamic>(builder: (_) {
-                return const PlayerPage();
-              }));
-            },
+            onPressed: () async {},
             icon: const Icon(Icons.play_arrow),
           ),
           IconButton(
@@ -45,64 +55,16 @@ class _DownloadPageState extends State<DownloadPage> {
           ),
         ],
       ),
-      body: StreamBuilder<DownloadEvent>(
-          stream: _hlsDownloaderPlugin.videoEventStreamController.stream,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Center(
-                child: Text(
-                  "Progress: ${snapshot.data?.progress}\n"
-                  "Status: ${snapshot.data?.status}",
-                ),
-              );
-            } else {
-              return const Center(
-                child: Text("No download"),
-              );
-            }
-          }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await _hlsDownloaderPlugin.getCacheOptions(
-            errorCallBack: (code) {},
-            successCallBack: (result) {
-              if (result != null) {
-                showModalBottomSheet<dynamic>(
-                    context: context,
-                    builder: (_) {
-                      return Container(
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(16),
-                            topRight: Radius.circular(16),
-                          ),
-                        ),
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: result.keys.length,
-                            itemBuilder: (_, index) {
-                              final key = result.keys.elementAt(index);
-                              final value = result.values.elementAt(index);
-
-                              return ListTile(
-                                onTap: () {
-                                  _hlsDownloaderPlugin.onSelectCacheOptions(
-                                    key,
-                                    errorCallBack: (code) {},
-                                    successCallBack: () {},
-                                  );
-                                  Navigator.pop(context);
-                                },
-                                title: Text("Quality: ${key}p - $value"),
-                              );
-                            }),
-                      );
-                    });
-              }
-            },
-          );
+      body: ListView.separated(
+        physics: BouncingScrollPhysics(),
+        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        itemBuilder: (_, index) {
+          return DownloadItem(model: _list[index]);
         },
-        child: const Icon(Icons.download),
+        separatorBuilder: (_, index) {
+          return SizedBox(height: 4);
+        },
+        itemCount: _list.length,
       ),
     );
   }

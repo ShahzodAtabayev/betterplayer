@@ -206,6 +206,14 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('onSelectCacheOptions() has not been implemented.');
   }
 
+  Future<void> playIos(
+    int? textureId, {
+    required VoidCallback successCallBack,
+    required ValueChanged<HlsDownloaderErrorCodes>? errorCallBack,
+  }) {
+    throw UnimplementedError('playIos() has not been implemented.');
+  }
+
   Future<void> onDismissCacheOptions(int? textureId) {
     throw UnimplementedError('onSelectCacheOptions() has not been implemented.');
   }
@@ -224,6 +232,10 @@ abstract class VideoPlayerPlatform {
 
   Future<void> onDeleteAllDownloads() {
     throw UnimplementedError('onDeleteAllDownloads() has not been implemented.');
+  }
+
+  Future<DownloadState> getDownloadState(String? url) {
+    throw UnimplementedError('getDownloadState() has not been implemented.');
   }
 
   Future<List<Download>> getDownloads() {

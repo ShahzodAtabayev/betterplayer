@@ -1,7 +1,7 @@
 import 'package:better_player/better_player.dart';
 
 class Download {
-  final DownloadStatus status;
+  final DownloadState status;
   final double percentDownloaded;
   final String url;
 

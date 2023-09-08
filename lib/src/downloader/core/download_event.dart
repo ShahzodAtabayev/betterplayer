@@ -1,11 +1,22 @@
 class DownloadEvent {
   final double progress;
 
-  final DownloadStatus status;
+  final DownloadState status;
 
   final String url;
+  final int? size;
 
-  DownloadEvent({required this.progress, required this.status, required this.url});
+  DownloadEvent({required this.progress, required this.status, required this.url, required this.size});
 }
 
-enum DownloadStatus { initial, downloading, completed, failed, queued, stopped, removed, restarting, unknown }
+enum DownloadState {
+  initial,
+  downloading,
+  completed,
+  failed,
+  queued,
+  stopped,
+  removed,
+  restarting,
+  unknown
+}
